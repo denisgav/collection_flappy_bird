@@ -18,7 +18,7 @@ class Game:
         pygame.init()
 
         self.clock = pygame.time.Clock()
-        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.RESIZABLE)
         self.background:Background = Background()
 
         pygame.display.set_caption(WINDOW_CAPTION)
