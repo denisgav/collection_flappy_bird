@@ -16,6 +16,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = BIRD_START_POS
         self.image_animation_index = 0
+        self.is_started = False
+        self.velocity = 0.0
+        self.MAX_CENTER_Y_VAL = WINDOW_HEIGHT - RESOURCE_BIRD_HEIGHT
     
     # =========================================================
     def update(self, window):
@@ -28,4 +31,34 @@ class Player(pygame.sprite.Sprite):
             self.image = self.bird_images[animation_index]
         else:
             self.image = self.bird_images[1]
-        
+
+        if self.is_started == True:
+            self.move(window)
+
+    # =========================================================
+    def move(self, window):
+        self.velocity += BIRD_ACCELERATION 
+        if self.velocity >= BIRD_MAX_VELOCITY:
+            self.velocity = BIRD_MAX_VELOCITY
+        self.rect.centery += self.velocity
+
+        if self.rect.centery <= 0:
+            self.rect.centery = 0
+
+        if self.rect.centery >= self.MAX_CENTER_Y_VAL:
+            self.rect.centery = self.MAX_CENTER_Y_VAL
+
+
+    # =========================================================
+    def on_flap(self):
+        self.velocity = BIRD_FLAP_VELOCITY
+
+    # =========================================================
+    def on_start(self):
+        self.is_started = True
+        self.velocity = 0.0
+
+    # =========================================================
+    def on_game_over(self):
+        self.is_started = False
+        self.velocity = 0.0
