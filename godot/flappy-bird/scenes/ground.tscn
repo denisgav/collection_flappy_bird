@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://xhkvqnnysyuf"]
+
+[ext_resource type="Script" uid="uid://bt4ec5d7485eh" path="res://scripts/ground.gd" id="1_pybca"]
+[ext_resource type="Texture2D" uid="uid://bq26j33yl5ou4" path="res://assets/sprites/Background/base.png" id="2_mi8v4"]
+
+[sub_resource type="Animation" id="Animation_mi8v4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Sprite2D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_lmksl"]
+resource_name = "scroll"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Sprite2D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-216, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_w5yvf"]
+_data = {
+&"RESET": SubResource("Animation_mi8v4"),
+&"scroll": SubResource("Animation_lmksl")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cjui8"]
+size = Vector2(1170, 107)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pbtef"]
+size = Vector2(1170, 4)
+
+[node name="Ground" type="StaticBody2D" unique_id=29109578 node_paths=PackedStringArray("animation_player")]
+script = ExtResource("1_pybca")
+animation_player = NodePath("AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1435543384]
+root_node = NodePath("../CollisionShape2D")
+libraries/ = SubResource("AnimationLibrary_w5yvf")
+autoplay = &"scroll"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1276115596]
+texture_repeat = 2
+texture = ExtResource("2_mi8v4")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1170, 112)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=469546988]
+position = Vector2(585, 58.5)
+shape = SubResource("RectangleShape2D_cjui8")
+
+[node name="DeathZone" type="Area2D" parent="." unique_id=1932547976]
+position = Vector2(584.5, 58)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathZone" unique_id=830711842]
+position = Vector2(0.5, -56)
+shape = SubResource("RectangleShape2D_pbtef")
+
+[connection signal="body_entered" from="DeathZone" to="." method="_on_death_zone_body_entered"]

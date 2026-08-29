@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bt6cfq172borv"]
+
+[ext_resource type="Script" uid="uid://cktd8uduls0xk" path="res://scripts/game.gd" id="1_iywne"]
+[ext_resource type="Texture2D" uid="uid://dn1mjiqxxa2ta" path="res://assets/sprites/Background/background-day.png" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://cbxghlvx2ibxt" path="res://scenes/player.tscn" id="2_yqjtg"]
+[ext_resource type="PackedScene" uid="uid://cr6piv26n3tsl" path="res://scenes/obstacle_spawner.tscn" id="3_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://xhkvqnnysyuf" path="res://scenes/ground.tscn" id="3_lnu2h"]
+[ext_resource type="PackedScene" uid="uid://dac2bp3j2xqq7" path="res://scenes/hud.tscn" id="6_p57ef"]
+
+[node name="Game" type="Node2D" unique_id=1693527985 groups=["obstacles"]]
+script = ExtResource("1_iywne")
+
+[node name="HUD" parent="." unique_id=479542886 instance=ExtResource("6_p57ef")]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=2115998819]
+texture_repeat = 2
+texture = ExtResource("1_uwrxv")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 910, 512)
+metadata/_edit_lock_ = true
+
+[node name="ObstacleSpawner" parent="." unique_id=241464111 instance=ExtResource("3_lbhrr")]
+position = Vector2(1020, 300)
+
+[node name="Player" parent="." unique_id=1405842117 instance=ExtResource("2_yqjtg")]
+position = Vector2(128, 306)
+
+[node name="Ground" parent="." unique_id=29109578 instance=ExtResource("3_lnu2h")]
+position = Vector2(0, 400)
+
+[connection signal="game_retry" from="HUD" to="." method="_on_hud_game_retry"]
+[connection signal="player_hit_obstacle" from="ObstacleSpawner" to="." method="_on_obstacle_spawner_player_hit_obstacle"]
+[connection signal="player_scored" from="ObstacleSpawner" to="." method="_on_obstacle_spawner_player_scored"]
+[connection signal="game_started" from="Player" to="." method="_on_player_game_started"]
+[connection signal="player_death_zone_entered" from="Ground" to="." method="_on_ground_player_death_zone_entered"]
