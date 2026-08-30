@@ -14,6 +14,7 @@ class PipeSpawner:
         self.pipes = pygame.sprite.Group()
         self.is_started = False
         self.pipe_timer = 0
+        self.score_listener = None
 
     # =========================================================
     def update(self, window):
@@ -26,6 +27,7 @@ class PipeSpawner:
 
                 pipe_top: Pipe = Pipe(x_top, y_top, self.pipe_img_top, True)
                 pipe_bottom: Pipe = Pipe(x_bottom, y_bottom, self.pipe_img_bottom, False)
+                pipe_bottom.score_listener = self.score_listener 
 
                 self.pipes.add(pipe_top)
                 self.pipes.add(pipe_bottom)

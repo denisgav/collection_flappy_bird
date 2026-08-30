@@ -16,6 +16,8 @@ class Base:
         self.TILE_HEIGHT  = None
         self.offset_left = 0
         self.is_started = False
+        self.rect = None
+        
         
     # =========================================================
     def update(self, window):
@@ -28,6 +30,8 @@ class Base:
             self.TILE_WIDTH = int(self.TILE_HEIGHT*self.BASE_ASPECT_RATIO)
             self.img_scaled = pygame.transform.scale(self.img, (self.TILE_WIDTH, self.TILE_HEIGHT))
             # print(f"Base TILE_HEIGHT = {self.TILE_HEIGHT} TILE_WIDTH = {self.TILE_WIDTH}")
+
+            self.rect = pygame.rect.Rect(0, self.SCREEN_HEIGHT-RESOURCE_BASE_HEIGHT, self.SCREEN_WIDTH, RESOURCE_BASE_HEIGHT)
 
         if self.is_started == True:
             self.offset_left += BASE_SCROLL_SPEED
