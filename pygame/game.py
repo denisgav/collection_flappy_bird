@@ -9,6 +9,9 @@ from player import Player
 from base import Base
 from pipe_spawner import PipeSpawner
 
+from message_screen import MessageScreen
+from game_over_screen import GameOverScreen
+
 class Game:
     # =========================================================
     def __init__(self):
@@ -30,6 +33,9 @@ class Game:
 
         pygame.display.set_caption(WINDOW_CAPTION)
 
+        self.message_screen:MessageScreen = MessageScreen()
+        self.game_over_screen:GameOverScreen = GameOverScreen(self.font)
+
         self.on_restart()
 
     # =========================================================
@@ -42,9 +48,13 @@ class Game:
                     pygame.quit()
                     exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        # 1 = Left, 2 = Middle, 3 = Right, 4 = Scroll Up, 5 = Scroll Down
-                        self.on_flap_action()
+                    if self.is_died == True:
+                        if self.game_over_screen.is_restart_btn_clicked(event):
+                            self.on_restart()
+                    else:
+                        if event.button == 1:
+                            # 1 = Left, 2 = Middle, 3 = Right, 4 = Scroll Up, 5 = Scroll Down
+                            self.on_flap_action()
                 elif event.type == pygame.KEYDOWN:
                     # Check if that specific key was the Spacebar
                     if event.key == pygame.K_SPACE:
@@ -80,6 +90,12 @@ class Game:
             # Draw score text
             score_text = self.font.render(str(self.score), True, pygame.Color(255, 255, 255))
             window.blit(score_text, (20, 20))
+        else:
+            if self.is_died == False:
+                self.message_screen.draw(window)
+            else:
+                self.game_over_screen.draw(window)
+                
 
     # =========================================================
     def on_flap_action(self):
@@ -120,12 +136,15 @@ class Game:
     def on_game_over(self):
         self.is_died = True
         self.is_started = False
+        if self.score > self.high_score:
+            self.high_score = self.score
+        self.game_over_screen.set_score(self.score, self.high_score)
         self.base.on_game_over()
         self.pipe_spawner.on_game_over()
         self.player.on_game_over()
 
     # =========================================================
     def on_score(self):
-        print("Score!")
+        # print("Score!")
         self.score += 1
 
