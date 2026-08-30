@@ -7,6 +7,7 @@ from settings import *
 from background import Background
 from player import Player
 from base import Base
+from pipe_spawner import PipeSpawner
 
 class Game:
     # =========================================================
@@ -30,6 +31,8 @@ class Game:
         self.player:Player = Player()
         self.player_group = pygame.sprite.GroupSingle()
         self.player_group.add(self.player)
+
+        self.pipe_spawner:PipeSpawner = PipeSpawner()
 
         pygame.display.set_caption(WINDOW_CAPTION)
 
@@ -60,11 +63,13 @@ class Game:
     def update(self, window) -> None:
         self.background.update(window)
         self.base.update(window)
+        self.pipe_spawner.update(window)
         self.player_group.update(window)
 
     # =========================================================
     def draw(self, window) -> None:
         self.background.draw(window)
+        self.pipe_spawner.draw(window)
         self.base.draw(window)
         self.player_group.draw(window)
 
@@ -82,12 +87,14 @@ class Game:
     # =========================================================
     def on_start(self):
         self.base.on_start()
+        self.pipe_spawner.on_start()
         self.player.on_start()
 
     # =========================================================
     def on_game_over(self):
         self.is_started = False
         self.base.on_game_over()
+        self.pipe_spawner.on_game_over()
         self.player.on_game_over()
         
 

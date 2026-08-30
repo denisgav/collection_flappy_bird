@@ -6,7 +6,7 @@ from settings import *
 class Base:
     # =========================================================
     def __init__(self):
-        self.img =  pygame.image.load(RESOURSE_BASE_PATH)
+        self.img =  pygame.image.load(RESOURSE_BASE_PATH).convert_alpha()
         self.img_scaled = None
         self.BASE_TO_BACKGROUND_HEIGHT_RATIO = RESOURCE_BASE_HEIGHT / RESOURSE_BACGROUND_HEIGHT
         self.BASE_ASPECT_RATIO = RESOURCE_BASE_WIDTH / RESOURCE_BASE_HEIGHT

@@ -6,7 +6,7 @@ from settings import *
 class Background:
     # =========================================================
     def __init__(self):
-        self.img =  pygame.image.load(RESOURSE_BACGROUND_DAY_PATH)
+        self.img =  pygame.image.load(RESOURSE_BACGROUND_DAY_PATH).convert_alpha()
         self.WIDTH_HEIGHT_RATIO = RESOURSE_BACGROUND_WIDTH/RESOURSE_BACGROUND_HEIGHT
         self.img_scaled = None
         self.SCREEN_WIDTH = None
