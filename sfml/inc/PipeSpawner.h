@@ -16,6 +16,7 @@ public:
     void draw(sf::RenderWindow& window);
     void onStart();
     void onGameOver();
+    bool pipeCollideWithRect(const sf::FloatRect & rect) const;
 
 public:
     std::function<void()> scoreListener;

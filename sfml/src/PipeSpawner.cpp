@@ -31,9 +31,21 @@ void PipeSpawner :: update()
         --m_pipeTimer;
     }
 
-    for (auto& pipe : m_pipes)
+    if (m_started)
     {
-        pipe->update();
+        for (auto& pipe : m_pipes)
+        {
+            pipe->update();
+        }
+
+        m_pipes.erase(
+            std::remove_if(
+                m_pipes.begin(),
+                m_pipes.end(),
+                shouldKeepPipe
+            ),
+            m_pipes.end()
+        );
     }
 
     // std::remove_if Defined in <algorithm>, std::remove_if rearranges elements in a range but does not actually alter the size of the container. 
@@ -46,15 +58,7 @@ void PipeSpawner :: update()
     // What it does: It physically destroys the elements within a specified iterator range and updates the vector's internal size tracking.
     // Memory impact: It calls the destructors of the removed elements but does not reduce the capacity (allocated memory) of the vector.
     // Return Value: It returns an iterator pointing to the element that now follows the last removed element.
-
-    m_pipes.erase(
-        std::remove_if(
-            m_pipes.begin(),
-            m_pipes.end(),
-            shouldKeepPipe
-        ),
-        m_pipes.end()
-    );
+   
 }
 
 void PipeSpawner :: draw(sf::RenderWindow& window)
@@ -107,4 +111,20 @@ void PipeSpawner :: spawnPipePair()
 
     m_pipes.push_back(std::move(top));
     m_pipes.push_back(std::move(bottom));
+}
+
+bool PipeSpawner :: pipeCollideWithRect(const sf::FloatRect & rect)  const
+{
+    bool collisionPipes = false;
+
+    for (auto& pipe : m_pipes)
+    {
+        if (rect.intersects(pipe->getBounds()))
+        {
+            collisionPipes = true;
+            break;
+        }
+    }
+
+    return collisionPipes;
 }

@@ -21,6 +21,7 @@ public:
     void onFlap();
     void onStart();
     void onGameOver();
+    sf::FloatRect getBounds() const;
 
 private:
     void animate();

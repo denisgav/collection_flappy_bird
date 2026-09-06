@@ -101,3 +101,8 @@ void Player :: move(const sf::RenderWindow& window)
     m_sprite.setRotation(
         m_velocity * BIRD_ANGULAR_SPEED);
 }
+
+sf::FloatRect Player::getBounds() const
+{
+    return m_sprite.getGlobalBounds();
+}

@@ -83,6 +83,10 @@ void Game :: update()
     base.update(window);
     pipe_spawner.update();
     player.update(window);
+
+    bool collision = collisionDetect();
+    if(collision)
+        onGameOver();
 }
 
 void Game :: draw()
@@ -91,6 +95,18 @@ void Game :: draw()
     pipe_spawner.draw(window);
     base.draw(window);
     player.draw(window);
+}
+
+bool Game :: collisionDetect() const
+{
+    sf::FloatRect playerRect = player.getBounds();
+    sf::FloatRect baseRect = base.getBounds();
+    bool collideWithGround = baseRect.intersects(playerRect);
+    if(collideWithGround)
+        return true;
+
+    bool collideWithPipe = pipe_spawner.pipeCollideWithRect(playerRect);
+    return collideWithPipe;
 }
 
 void Game :: onFlapAction()
@@ -121,12 +137,18 @@ void Game :: onStart()
 
 void Game :: onRestart()
 {
-
 }
 
 void Game :: onGameOver()
 {
-
+    is_died = true;
+    is_started = false;
+    if(score > high_score)
+        high_score = score;
+    // game_over_screen.set_score(score, high_score)
+    base.onGameOver();
+    pipe_spawner.onGameOver();
+    player.onGameOver();
 }
 
 void Game :: onScore()

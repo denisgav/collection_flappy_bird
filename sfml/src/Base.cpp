@@ -95,3 +95,10 @@ void Base :: onGameOver()
 {
     m_started = false;
 }
+
+sf::FloatRect Base::getBounds() const
+{
+    float yOffset =
+        static_cast<float>(m_screenHeight - m_tileHeight);
+    return sf::FloatRect(0.0f, yOffset, static_cast<float>(m_screenWidth), static_cast<float>(m_tileHeight));
+}

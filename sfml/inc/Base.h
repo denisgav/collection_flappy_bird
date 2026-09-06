@@ -7,14 +7,11 @@ class Base
 {
 public:
     explicit Base();
-
     void update(const sf::RenderWindow& window);
-
     void draw(sf::RenderWindow& window);
-
     void onStart();
-
     void onGameOver();
+    sf::FloatRect getBounds() const;
 
 private:
     sf::Texture m_texture;

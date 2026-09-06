@@ -20,6 +20,7 @@ private:
     int unsigned high_score;
     void update();
     void draw();
+    bool collisionDetect() const;
     void onFlapAction();
     void onFlap();
     void onStart();
