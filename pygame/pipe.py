@@ -24,7 +24,7 @@ class Pipe(pygame.sprite.Sprite):
     # =========================================================
     def update(self):
         self.rect.x -= BASE_SCROLL_SPEED
-        if self.rect.x < -RESOURSE_PIPE_WIDTH:
+        if self.rect.x < -RESOURCE_PIPE_WIDTH:
             self.kill()
         if self.score_listener != None and self.is_top == False:
             if BIRD_START_POS[0] > self.rect.topleft[0] and not self.bird_passed:

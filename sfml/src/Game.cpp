@@ -8,6 +8,7 @@ Game :: Game() :
     background(),
     base(),
     player(),
+    pipe_spawner(),
     is_started(false), is_died(false),
     score(0), high_score(0)
 {
@@ -80,12 +81,14 @@ void Game :: update()
 {
     background.update(window);
     base.update(window);
+    pipe_spawner.update();
     player.update(window);
 }
 
 void Game :: draw()
 {
     background.draw(window);
+    pipe_spawner.draw(window);
     base.draw(window);
     player.draw(window);
 }
@@ -112,7 +115,7 @@ void Game :: onStart()
 {
     score = 0;
     base.onStart();
-    //pipe_spawner.on_start();
+    pipe_spawner.onStart();
     player.onStart();
 }
 

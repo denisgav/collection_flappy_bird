@@ -8,7 +8,7 @@ class GameOverScreen:
     # =========================================================
     def __init__(self, font):
         self.font = font
-        self.img =  pygame.image.load(RESOURSE_GAMEOVER_PATH).convert_alpha()
+        self.img =  pygame.image.load(RESOURCE_GAMEOVER_PATH).convert_alpha()
         self.score = None
         self.high_score = None
         self.SCREEN_WIDTH = None

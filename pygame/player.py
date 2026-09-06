@@ -8,9 +8,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.bird_images =  [
-            pygame.image.load(RESOURSE_BLUEBIRD_DOWNFLAP_PATH).convert_alpha(),
-            pygame.image.load(RESOURSE_BLUEBIRD_MIDFLAP_PATH).convert_alpha(),
-            pygame.image.load(RESOURSE_BLUEBIRD_UPFLAP_PATH).convert_alpha()
+            pygame.image.load(RESOURCE_BLUEBIRD_DOWNFLAP_PATH).convert_alpha(),
+            pygame.image.load(RESOURCE_BLUEBIRD_MIDFLAP_PATH).convert_alpha(),
+            pygame.image.load(RESOURCE_BLUEBIRD_UPFLAP_PATH).convert_alpha()
         ]
         self.image = self.bird_images[0]
         self.rect = self.image.get_rect()

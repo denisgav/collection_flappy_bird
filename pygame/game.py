@@ -26,7 +26,7 @@ class Game:
     # =========================================================
     def init(self) -> None:
         pygame.init()
-        self.font = pygame.font.Font(RESOURSE_FONT_PATH, 45)
+        self.font = pygame.font.Font(RESOURCE_FONT_PATH, 45)
 
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))

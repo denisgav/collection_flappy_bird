@@ -9,7 +9,7 @@ Base :: Base(): m_texture(), m_sprite(),
     m_offsetLeft(0.0f), m_baseAspectRatio(0.0f),
     m_started(false)
 {
-    if (!m_texture.loadFromFile(RESOURSE_BASE_PATH))
+    if (!m_texture.loadFromFile(RESOURCE_BASE_PATH))
     {
         throw std::runtime_error("Failed to load base texture");
     }

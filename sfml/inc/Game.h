@@ -4,6 +4,8 @@
 #include "Background.h"
 #include "Base.h"
 #include "Player.h"
+#include "Pipe.h"
+#include "PipeSpawner.h"
 
 class Game{
 private:
@@ -11,6 +13,7 @@ private:
     Background background;
     Base base;
     Player player;
+    PipeSpawner pipe_spawner;
     bool is_started;
     bool is_died;
     int unsigned score;

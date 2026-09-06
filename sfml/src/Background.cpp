@@ -8,7 +8,7 @@ Background :: Background():
     m_screenWidth(0), m_screenHeight(0), 
     m_widthHeightRatio(0.0f), m_tileWidth(0)
 {
-    if (!m_texture.loadFromFile(RESOURSE_BACGROUND_DAY_PATH))
+    if (!m_texture.loadFromFile(RESOURCE_BACGROUND_DAY_PATH))
     {
         throw std::runtime_error("Failed to load background texture");
     }

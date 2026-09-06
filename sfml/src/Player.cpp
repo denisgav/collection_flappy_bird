@@ -5,9 +5,9 @@
 Player :: Player() : m_textures(), m_sprite(),
     m_animationCounter(0), m_started(false), m_velocity(0.0f)
 {
-    if (!m_textures[0].loadFromFile(RESOURSE_BLUEBIRD_DOWNFLAP_PATH) ||
-        !m_textures[1].loadFromFile(RESOURSE_BLUEBIRD_MIDFLAP_PATH) ||
-        !m_textures[2].loadFromFile(RESOURSE_BLUEBIRD_UPFLAP_PATH))
+    if (!m_textures[0].loadFromFile(RESOURCE_BLUEBIRD_DOWNFLAP_PATH) ||
+        !m_textures[1].loadFromFile(RESOURCE_BLUEBIRD_MIDFLAP_PATH) ||
+        !m_textures[2].loadFromFile(RESOURCE_BLUEBIRD_UPFLAP_PATH))
     {
         throw std::runtime_error("Failed to load bird textures");
     }

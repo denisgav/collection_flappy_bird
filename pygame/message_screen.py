@@ -6,7 +6,7 @@ from settings import *
 class MessageScreen:
     # =========================================================
     def __init__(self):
-        self.img =  pygame.image.load(RESOURSE_MESSAGE_PATH).convert_alpha()
+        self.img =  pygame.image.load(RESOURCE_MESSAGE_PATH).convert_alpha()
 
     # =========================================================
     def draw(self, window):
