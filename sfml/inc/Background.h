@@ -1,12 +1,6 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-
-#include "settings.h"
-
-#pragma once
 
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <stdexcept>
 
 class Background

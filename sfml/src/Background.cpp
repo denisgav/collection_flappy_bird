@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Background.h"
 
+#include "settings.h"
+
 Background :: Background(): 
     m_texture(), m_sprite(), 
     m_screenWidth(0), m_screenHeight(0), 
