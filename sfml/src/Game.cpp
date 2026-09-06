@@ -13,6 +13,7 @@ Game :: Game() :
     score(0), high_score(0)
 {
     window.setFramerateLimit(WINDOW_FPS);
+    pipe_spawner.scoreListener = std::bind(&Game::onScore, this);
 }
 
 void Game :: init()
@@ -137,6 +138,7 @@ void Game :: onStart()
 
 void Game :: onRestart()
 {
+    
 }
 
 void Game :: onGameOver()
@@ -154,4 +156,5 @@ void Game :: onGameOver()
 void Game :: onScore()
 {
     score++;
+    std :: cout << "Soce: " << score << std :: endl;
 }

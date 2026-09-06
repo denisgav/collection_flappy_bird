@@ -14,12 +14,13 @@ PipeSpawner :: PipeSpawner()
     m_rng.seed(std::random_device{}());
 }
 
-bool shouldKeepPipe(const std::unique_ptr<Pipe>& pipe){
-    return pipe->outOfWindow() == false;
+bool shouldRemovePipe(const std::unique_ptr<Pipe>& pipe){
+    return pipe->outOfWindow();
 }
 
 void PipeSpawner :: update()
 {
+    
     if (m_started)
     {
         if (m_pipeTimer <= 0)
@@ -42,7 +43,7 @@ void PipeSpawner :: update()
             std::remove_if(
                 m_pipes.begin(),
                 m_pipes.end(),
-                shouldKeepPipe
+                shouldRemovePipe
             ),
             m_pipes.end()
         );

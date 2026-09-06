@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Pipe.h"
 
 #include "settings.h"
@@ -28,10 +29,10 @@ Pipe :: Pipe(
 
 void Pipe :: update()
 {
-    m_sprite.move(-SCROLL_SPEED, 0.f);
-
     if(outOfWindow())
         return;
+
+    m_sprite.move(-SCROLL_SPEED, 0.f);
 
     if (scoreListener && !m_isTop)
     {
@@ -40,7 +41,7 @@ void Pipe :: update()
 
         float right =
             left +
-            m_sprite.getGlobalBounds().width;
+            RESOURCE_PIPE_WIDTH;
 
         if (BIRD_START_X > left &&
             !m_birdPassed)
@@ -76,5 +77,7 @@ const sf::FloatRect Pipe :: getBounds() const
 
 bool Pipe :: outOfWindow() const
 {
-    return m_sprite.getPosition().x < -RESOURCE_PIPE_WIDTH;
+    float left = m_sprite.getGlobalBounds().left;
+    float left_min_pos = -(static_cast<float>(RESOURCE_PIPE_WIDTH));
+    return left < left_min_pos;
 }
