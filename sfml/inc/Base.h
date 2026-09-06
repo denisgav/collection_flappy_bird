@@ -11,6 +11,7 @@ public:
     void draw(sf::RenderWindow& window);
     void onStart();
     void onGameOver();
+    void onRestart();
     sf::FloatRect getBounds() const;
 
 private:

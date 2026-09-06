@@ -15,6 +15,7 @@ public:
     void update();
     void draw(sf::RenderWindow& window);
     void onStart();
+    void onRestart();
     void onGameOver();
     bool pipeCollideWithRect(const sf::FloatRect & rect) const;
 
@@ -26,7 +27,6 @@ private:
 
 private:
     sf::Texture m_pipeTextureBottom;
-
     std::vector<std::unique_ptr<Pipe>> m_pipes;
 
     bool m_started = false;

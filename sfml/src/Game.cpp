@@ -9,11 +9,25 @@ Game :: Game() :
     base(),
     player(),
     pipe_spawner(),
+    messageScreen(),
+    gameOverScreen(),
+    font(), scoreText(),
     is_started(false), is_died(false),
     score(0), high_score(0)
 {
     window.setFramerateLimit(WINDOW_FPS);
     pipe_spawner.scoreListener = std::bind(&Game::onScore, this);
+
+    if(!font.loadFromFile(RESOURCE_FONT_PATH))
+    {
+         throw std::runtime_error(
+            "Failed to load game font");
+    }
+
+    scoreText.setFont(font);
+    scoreText.setCharacterSize(45);
+    scoreText.setFillColor(sf::Color::White);
+    scoreText.setPosition(20.f, 20.f);
 }
 
 void Game :: init()
@@ -48,7 +62,15 @@ int Game :: main(){
                 {
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        onFlapAction();
+                        if(is_died)
+                        {
+                            if(gameOverScreen.isRestartClicked(event, window))
+                                onRestart();
+                        }
+                        else
+                        {
+                            onFlapAction();
+                        }
                     }
                     break;
                 }
@@ -96,6 +118,24 @@ void Game :: draw()
     pipe_spawner.draw(window);
     base.draw(window);
     player.draw(window);
+
+    if(is_started)
+    {
+        scoreText.setString(std::to_string(score));
+        window.draw(scoreText);
+    }
+    else
+    {
+        if(is_died == false)
+        {
+            messageScreen.draw(window);
+        }
+        else
+        {
+            gameOverScreen.setScore(score, high_score);
+            gameOverScreen.draw(window);
+        }
+    }
 }
 
 bool Game :: collisionDetect() const
@@ -138,7 +178,11 @@ void Game :: onStart()
 
 void Game :: onRestart()
 {
-    
+    base.onRestart();
+    player.onRestart();
+    pipe_spawner.onRestart();
+    is_died = false;
+    is_started = false;
 }
 
 void Game :: onGameOver()

@@ -48,6 +48,15 @@ void Player :: onStart()
     m_velocity = 0.0f;
 }
 
+void Player ::onRestart()
+{
+    m_started = false;
+    m_velocity = 0.0f;
+
+    m_sprite.setPosition(BIRD_START_X, BIRD_START_Y);
+    m_sprite.setRotation(0.0f);
+}
+
 void Player :: onGameOver()
 {
     m_started = false;

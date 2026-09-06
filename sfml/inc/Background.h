@@ -5,17 +5,15 @@
 
 class Background
 {
+public:
+    explicit Background();
+    void update(const sf::RenderWindow& window);
+    void draw(sf::RenderWindow& window);
+    
 private:
     sf::Texture m_texture;
     sf::Sprite m_sprite;
     int unsigned m_screenWidth, m_screenHeight;
     float m_widthHeightRatio;
     int unsigned m_tileWidth;
-
-public:
-    explicit Background();
-
-    void update(const sf::RenderWindow& window);
-
-    void draw(sf::RenderWindow& window);
 };

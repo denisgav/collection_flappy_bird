@@ -75,6 +75,13 @@ void PipeSpawner :: onStart()
     m_started = true;
 }
 
+void PipeSpawner :: onRestart()
+{
+    m_started = false;
+    m_pipes.clear();
+    m_pipeTimer = 0;
+}
+
 void PipeSpawner :: onGameOver()
 {
     m_started = false;

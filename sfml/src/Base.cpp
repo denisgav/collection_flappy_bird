@@ -91,6 +91,12 @@ void Base :: onStart()
     m_started = true;
 }
 
+void Base :: onRestart()
+{
+    m_offsetLeft = 0.f;
+    m_started = false;
+}
+
 void Base :: onGameOver()
 {
     m_started = false;

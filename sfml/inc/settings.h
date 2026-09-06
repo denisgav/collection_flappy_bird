@@ -16,6 +16,8 @@ const float BIRD_MAX_VELOCITY = 8.f;
 const float BIRD_FLAP_VELOCITY = -7.f;
 const float BIRD_ANGULAR_SPEED = 7.f;
 
+const char RESOURCE_FONT_PATH[] = "assets/font/04B_19__.TTF";
+
 const char RESOURCE_BACGROUND_DAY_PATH[] = "assets/sprites/background-day.png";
 const char RESOURCE_BASE_PATH[] = "assets/sprites/base.png";
 const float baseToBackgroundHeightRatio = 0.22f;
@@ -34,3 +36,6 @@ const int PIPE_SPAWNER_POSY_RAND_RANGE_MIN = -RESOURCE_PIPE_HEIGHT + 25;
 const int PIPE_SPAWNER_POSY_RAND_RANGE_MAX = -RESOURCE_PIPE_HEIGHT + 275;
 const int PIPE_SPAWNER_POSY_GAP = 150;
 const int PIPE_SPAWNER_POS_X = 950;
+
+const char RESOURCE_MESSAGE_PATH[] = "assets/sprites/message.png";
+const char RESOURCE_GAMEOVER_PATH[] = "assets/sprites/gameover.png";
