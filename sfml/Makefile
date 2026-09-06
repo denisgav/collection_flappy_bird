@@ -9,6 +9,7 @@ SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 # 3. Directories & Target Output
 TARGET    := flappy-bird
 SRC_DIR   := src
+INC_DIR   := inc
 OBJ_DIR   := obj
 
 # 4. Source and Object File Discovery
@@ -20,11 +21,11 @@ all: $(TARGET)
 
 # 6. Linking Target
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(SFML_LIBS)
+	$(CXX) $(CXXFLAGS) -I$(INC_DIR) $^ -o $@ $(SFML_LIBS)
 
 # 7. Compiling Source Files into Object Files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I$(INC_DIR) -c $< -o $@
 
 # 8. Create Object Directory If It Doesn't Exist
 $(OBJ_DIR):
