@@ -85,7 +85,7 @@ public class PipeSpawner {
 	public void onGameOver() {
 		started = false;
 	}
-	
+
 	public void onRestart() {
 		started = false;
 		pipeTimer = 0;

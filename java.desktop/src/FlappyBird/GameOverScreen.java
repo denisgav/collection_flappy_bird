@@ -23,10 +23,15 @@ public class GameOverScreen {
 
 	private int screenWidth;
 	private int screenHeight;
+	
+	private IRestartListener restartListener;
 
 	public GameOverScreen(JFrame frame, Font font) {
 		this.font = font;
 		this.frame = frame;
+		
+		screenWidth = Settings.WINDOW_WIDTH;
+		screenHeight = Settings.WINDOW_HEIGHT;
 
 		image = ResourceLoader.loadImage(Settings.RESOURCE_GAMEOVER_PATH);
 
@@ -34,9 +39,19 @@ public class GameOverScreen {
 		restartButton.addActionListener(e -> restartGame());
 		frame.add(restartButton);
 		restartButton.setVisible(false);
-
-		screenWidth = Settings.WINDOW_WIDTH;
-		screenHeight = Settings.WINDOW_HEIGHT;
+		
+		int posX = (screenWidth - image.getWidth()) / 2;
+		int posY = (screenHeight - image.getHeight() * 4) / 2;
+		posY += image.getHeight()*3;
+		restartButton.setBounds(
+				posX,
+				posY,
+				image.getWidth(),
+				image.getHeight());
+	}
+	
+	public void setRestartListener(IRestartListener restartListener) {
+		this.restartListener = restartListener;
 	}
 
 	public void setScore(int score, int highScore) {
@@ -45,24 +60,38 @@ public class GameOverScreen {
 	}
 	
 	public void restartGame() {
-		
+		restartListener.onRestart();
+	}
+	
+	public void onShow() {
+		restartButton.setVisible(true);
+		restartButton.getParent().revalidate();
+		restartButton.getParent().repaint();
+	}
+	
+	public void onHide() {
+		restartButton.setVisible(false);
+		restartButton.getParent().revalidate();
+		restartButton.getParent().repaint();
 	}
 
 	public void draw(Graphics g) {
 		int posX = (screenWidth - image.getWidth()) / 2;
-
 		int posY = (screenHeight - image.getHeight() * 4) / 2;
+		
+		g.setFont(font);
+		g.setColor(Color.WHITE);
 
 		//
 		// Game over image
 		//
 		g.drawImage(image, posX, posY, null);
+		
+		posY += image.getHeight();
 
 		//
 		// Score
 		//
-		g.setFont(font);
-		g.setColor(Color.WHITE);
 
 		posY += image.getHeight();
 

@@ -5,9 +5,10 @@ import java.awt.image.BufferedImage;
 import java.awt.*;
 import javax.swing.*;
 
-public class FlappyBird extends JPanel implements IScoreListener {
+public class FlappyBird extends JPanel implements IScoreListener, IRestartListener {
 	private static final long serialVersionUID = 1L;
 	
+	private JFrame frame;
 	private Font font;
 	
 	private Background background;
@@ -16,7 +17,7 @@ public class FlappyBird extends JPanel implements IScoreListener {
 	private Player player;
 	
 	private MessageScreen messageScreen;
-	//private GameOverScreen gameOverScreen;
+	private GameOverScreen gameOverScreen;
 	
 	private Timer gameLoop;
 	
@@ -28,7 +29,8 @@ public class FlappyBird extends JPanel implements IScoreListener {
     private int score;
     private int high_score;
 
-    FlappyBird() {
+    FlappyBird(JFrame frame) {
+    	this.frame = frame;
     	setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
     	setFocusable(true);
     	setBackground(Color.blue);
@@ -49,7 +51,8 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	player = new Player();
     	
     	messageScreen = new MessageScreen();
-    	//gameOverScreen = new GameOverScreen(null, font);
+    	gameOverScreen = new GameOverScreen(frame, font);
+    	gameOverScreen.setRestartListener(this);
     	
     	pipeSpawner.setScoreListener(this);
     	
@@ -127,7 +130,7 @@ public class FlappyBird extends JPanel implements IScoreListener {
         player.onStart();
     }
     
-    private void onRestart() {
+    public void onRestart() {
     	base.onRestart();
     	pipeSpawner.onRestart();
         player.onRestart();
@@ -141,6 +144,13 @@ public class FlappyBird extends JPanel implements IScoreListener {
         base.onGameOver();
         player.onGameOver();
         pipeSpawner.onGameOver();
+        
+        gameOverScreen.setScore(score, high_score);
+        gameOverScreen.onShow();
+        
+        if(score > high_score) {
+        	high_score = score;
+        }
     }
     
     public void onScore() {
@@ -190,6 +200,7 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	player.draw(g);
     	
     	if(is_started) {
+    		g.setColor(Color.WHITE);
     		g.setFont(font);
     		g.drawString(String.valueOf(score), 20, 50);
         }
@@ -199,8 +210,7 @@ public class FlappyBird extends JPanel implements IScoreListener {
                 messageScreen.draw(g);
             }
             else {
-//                gameOverScreen.setScore(score, high_score);
-//                gameOverScreen.draw(g);
+                gameOverScreen.draw(g);
             }
         }
     }
