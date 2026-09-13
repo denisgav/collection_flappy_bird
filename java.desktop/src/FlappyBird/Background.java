@@ -1,12 +1,13 @@
 package FlappyBird;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import javax.swing.*;
 
 public class Background {
-	private ImageIcon backgroundImgIcon;
-	private Image backgroundImg;
-	private Image backgroundImgScaled;
+	private BufferedImage backgroundImg;
+	private BufferedImage backgroundImgScaled;
 	
 	private int imageWidth;
 	private int imageHeight;
@@ -18,8 +19,7 @@ public class Background {
 	private int tileWidth;
 	
 	public Background() {
-		backgroundImgIcon = new ImageIcon(getClass().getResource(Settings.RESOURCE_BACGROUND_DAY_PATH));
-		backgroundImg = backgroundImgIcon.getImage();
+		backgroundImg = ResourceLoader.loadImage(Settings.RESOURCE_BACGROUND_DAY_PATH);
 		
 		imageWidth = backgroundImg.getWidth(null);
 		imageHeight = backgroundImg.getHeight(null);
@@ -33,7 +33,7 @@ public class Background {
 		tileWidth =
 	            (int)((float)boardHeight * m_WidthHeightRatio);
 		
-		backgroundImgScaled = backgroundImg.getScaledInstance(tileWidth, tileHeight, tileWidth);
+		backgroundImgScaled = ResourceLoader.scaleImage(backgroundImg, tileWidth, tileHeight);
 	}
 	
 	public void update() {

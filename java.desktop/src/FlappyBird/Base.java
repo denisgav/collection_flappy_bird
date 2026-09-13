@@ -2,11 +2,11 @@ package FlappyBird;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 
 public class Base {
-	private ImageIcon baseImgIcon;
-	private Image baseImg;
-	private Image baseImgScaled;
+	private BufferedImage baseImg;
+	private BufferedImage baseImgScaled;
 	
 	private int imageWidth;
 	private int imageHeight;
@@ -22,8 +22,7 @@ public class Base {
 	private boolean started = false;
 	
 	public Base() {
-		baseImgIcon = new ImageIcon(getClass().getResource(Settings.RESOURCE_BASE_PATH));
-		baseImg = baseImgIcon.getImage();
+		baseImg = ResourceLoader.loadImage(Settings.RESOURCE_BASE_PATH);
 		
 		imageWidth = baseImg.getWidth(null);
 		imageHeight = baseImg.getHeight(null);
@@ -42,7 +41,7 @@ public class Base {
 				(int)(tileHeight *
 				baseAspectRatio);
 		
-		baseImgScaled = baseImg.getScaledInstance(tileWidth, tileHeight, tileWidth);
+		baseImgScaled = ResourceLoader.scaleImage(baseImg, tileWidth, tileHeight);
 	}
 	
 	public void update() {

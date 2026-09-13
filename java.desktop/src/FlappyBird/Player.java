@@ -3,13 +3,12 @@ package FlappyBird;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 public class Player
 {
-	private ImageIcon birdImageIcons[];
-	private Image birdImages[];
-
-	private Image currentImage;
+	private BufferedImage birdImages[];
+	private BufferedImage currentImage;
 
 	private float centerX;
 	private float centerY;
@@ -21,19 +20,16 @@ public class Player
 	private float velocity = 0.0f;
 
 	private final int maxCenterY;
+	
+	private AffineTransform transform;
 
 	public Player() {
-		birdImageIcons = new ImageIcon[] {
-				new ImageIcon(getClass().getResource(Settings.RESOURCE_BLUEBIRD_DOWNFLAP_PATH)),
-				new ImageIcon(getClass().getResource(Settings.RESOURCE_BLUEBIRD_MIDFLAP_PATH)),
-				new ImageIcon(getClass().getResource(Settings.RESOURCE_BLUEBIRD_UPFLAP_PATH))
+		birdImages = new BufferedImage[] {
+				ResourceLoader.loadImage(Settings.RESOURCE_BLUEBIRD_DOWNFLAP_PATH),
+				ResourceLoader.loadImage(Settings.RESOURCE_BLUEBIRD_MIDFLAP_PATH),
+				ResourceLoader.loadImage(Settings.RESOURCE_BLUEBIRD_UPFLAP_PATH)
 		};
 		
-		birdImages = new Image[birdImageIcons.length];
-		for(int i=0; i<birdImageIcons.length; i++) {
-			birdImages[i] = birdImageIcons[i].getImage();
-		}
-
 		currentImage = birdImages[0];
 
 		centerX = Settings.BIRD_START_X;
@@ -42,6 +38,8 @@ public class Player
 		maxCenterY =
 				Settings.WINDOW_HEIGHT -
 				Settings.RESOURCE_BIRD_HEIGHT;
+		
+		transform = new AffineTransform();
 	}
 
 	public void update() {
@@ -66,6 +64,25 @@ public class Player
 		if (started){
 			move();
 		}
+		
+		double angle = Math.toRadians(
+				velocity * Settings.BIRD_ANGULAR_SPEED);
+
+		int width = Settings.RESOURCE_BIRD_WIDTH;
+		int height = Settings.RESOURCE_BIRD_HEIGHT;
+
+		transform.setToIdentity();
+
+		transform.translate(
+				centerX - width / 2.0,
+				centerY - height / 2.0
+		);
+
+		transform.rotate(
+				angle,
+				width / 2.0,
+				height / 2.0
+		);
 	}
 
 	private void move() {
@@ -83,30 +100,11 @@ public class Player
 		if (centerY > maxCenterY) {
 			centerY = maxCenterY;
 		}
+		
 	}
 
 	public void draw(Graphics g) {
-		double angle = Math.toRadians(
-				velocity * Settings.BIRD_ANGULAR_SPEED);
-
-		int width = Settings.RESOURCE_BIRD_WIDTH;
-		int height = Settings.RESOURCE_BIRD_HEIGHT;
-
-		AffineTransform transform = new AffineTransform();
-
-		transform.translate(
-				centerX - width / 2.0,
-				centerY - height / 2.0
-		);
-
-		transform.rotate(
-				angle,
-				width / 2.0,
-				height / 2.0
-		);
-		
 		Graphics2D g2d = (Graphics2D) g;
-
 		g2d.drawImage(currentImage, transform, null);
 	}
 

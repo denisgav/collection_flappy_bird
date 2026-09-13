@@ -1,6 +1,7 @@
 package FlappyBird;
 
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.awt.*;
 import javax.swing.*;
 
@@ -13,6 +14,9 @@ public class FlappyBird extends JPanel {
 	
 	private Timer gameLoop;
 	
+	private BufferedImage backBuffer;
+	private Graphics2D backGraphics;
+	
     private boolean is_started;
     private boolean is_died;
     private int score;
@@ -22,6 +26,13 @@ public class FlappyBird extends JPanel {
     	setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
     	setFocusable(true);
     	setBackground(Color.blue);
+    	
+    	backBuffer = new BufferedImage(
+    			Settings.WINDOW_WIDTH,
+    			Settings.WINDOW_HEIGHT,
+    	        BufferedImage.TYPE_INT_ARGB);
+
+    	backGraphics = backBuffer.createGraphics();
     	
     	background = new Background();
     	base = new Base();
@@ -65,11 +76,18 @@ public class FlappyBird extends JPanel {
 		
     public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		draw(g);
+		
+		g.drawImage(
+    			backBuffer,
+    			0,
+    			0,
+    			null
+    	);
 	}
     
     public void onGameTick() {
     	update();
+    	draw(backGraphics);
     	repaint();
     }
     
@@ -115,6 +133,15 @@ public class FlappyBird extends JPanel {
     }
     
     public void draw(Graphics g) {
+    	// Clear screen
+    	g.setColor(Color.BLACK);
+    	g.fillRect(
+    			0,
+    			0,
+    			backBuffer.getWidth(),
+    			backBuffer.getHeight()
+    	);
+    	
     	background.draw(g);
     	base.draw(g);
     	player.draw(g);
