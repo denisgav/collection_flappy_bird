@@ -3,9 +3,9 @@ import javax.swing.*;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        JFrame frame = new JFrame(FlappyBird.WINDOW_CAPTION);
+        JFrame frame = new JFrame(Settings.WINDOW_CAPTION);
         // frame.setVisible(true);
-		frame.setSize(FlappyBird.WINDOW_WIDTH, FlappyBird.WINDOW_HEIGHT);
+		frame.setSize(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
