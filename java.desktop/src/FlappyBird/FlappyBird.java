@@ -5,11 +5,12 @@ import java.awt.image.BufferedImage;
 import java.awt.*;
 import javax.swing.*;
 
-public class FlappyBird extends JPanel {
+public class FlappyBird extends JPanel implements IScoreListener {
 	private static final long serialVersionUID = 1L;
 	
 	private Background background;
 	private Base base;
+	private PipeSpawner pipeSpawner;
 	private Player player;
 	
 	private Timer gameLoop;
@@ -36,7 +37,10 @@ public class FlappyBird extends JPanel {
     	
     	background = new Background();
     	base = new Base();
+    	pipeSpawner = new PipeSpawner();
     	player = new Player();
+    	
+    	pipeSpawner.setScoreListener(this);
     	
     	addMouseListener(new MouseAdapter() {
     		@Override
@@ -108,27 +112,31 @@ public class FlappyBird extends JPanel {
     private void onStart() {
     	score = 0;
         base.onStart();
+        pipeSpawner.onStart();
         player.onStart();
     }
     
     private void onRestart() {
     	base.onRestart();
+    	pipeSpawner.onRestart();
         player.onRestart();
         is_died = false;
         is_started = false;
     }
     
     private void onGameOver() {
-    	
+    	is_died = true;
+        is_started = false;
     }
     
-    private void onScore() {
-    	
+    public void onScore() {
+    	System.out.println("Scored!");
     }
     
     public void update() {
     	background.update();
     	base.update();
+    	pipeSpawner.update();
     	player.update();
     }
     
@@ -143,6 +151,7 @@ public class FlappyBird extends JPanel {
     	);
     	
     	background.draw(g);
+    	pipeSpawner.draw(g);
     	base.draw(g);
     	player.draw(g);
     }

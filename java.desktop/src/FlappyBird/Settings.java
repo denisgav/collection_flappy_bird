@@ -26,4 +26,14 @@ public final class Settings {
 	public static final String RESOURCE_BLUEBIRD_DOWNFLAP_PATH = "./../assets/sprites/bluebird-downflap.png";
 	public static final String RESOURCE_BLUEBIRD_MIDFLAP_PATH  = "./../assets/sprites/bluebird-midflap.png";
 	public static final String RESOURCE_BLUEBIRD_UPFLAP_PATH   = "./../assets/sprites/bluebird-upflap.png";
+	
+	public static final int RESOURCE_PIPE_WIDTH = 52;
+	public static final int RESOURCE_PIPE_HEIGHT = 320;
+	public static final String RESOURCE_PIPE_GREEN_PATH = "./../assets/sprites/pipe-green.png";
+
+	public static final int PIPE_SPAWNER_TIMEOUT = 180;
+	public static final int PIPE_SPAWNER_POSY_RAND_RANGE_MIN = -RESOURCE_PIPE_HEIGHT + 25;
+	public static final int PIPE_SPAWNER_POSY_RAND_RANGE_MAX = -RESOURCE_PIPE_HEIGHT + 275;
+	public static final int PIPE_SPAWNER_POSY_GAP = 150;
+	public static final int PIPE_SPAWNER_POS_X = 950;
 }

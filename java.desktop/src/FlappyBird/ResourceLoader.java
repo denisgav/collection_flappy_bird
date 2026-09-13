@@ -1,7 +1,10 @@
 package FlappyBird;
 
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
+import java.awt.Transparency;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -30,11 +33,9 @@ public class ResourceLoader
 	                    BufferedImage.TYPE_INT_ARGB);
 
 	    Graphics2D g2d = scaled.createGraphics();
-
 	    g2d.setRenderingHint(
 	            RenderingHints.KEY_INTERPOLATION,
 	            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
 	    g2d.drawImage(
 	            original,
 	            0,
@@ -42,9 +43,30 @@ public class ResourceLoader
 	            newWidth,
 	            newHeight,
 	            null);
-
 	    g2d.dispose();
 
 	    return scaled;
 	}
+	
+    public static BufferedImage flipVerticalImage(BufferedImage source) {
+        BufferedImage result =
+                GraphicsEnvironment
+                        .getLocalGraphicsEnvironment()
+                        .getDefaultScreenDevice()
+                        .getDefaultConfiguration()
+                        .createCompatibleImage(
+                                source.getWidth(),
+                                source.getHeight(),
+                                Transparency.TRANSLUCENT);
+
+        Graphics2D g = result.createGraphics();
+
+        AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+        tx.translate(0, -source.getHeight());
+
+        g.drawImage(source, tx, null);
+        g.dispose();
+
+        return result;
+    }
 }
