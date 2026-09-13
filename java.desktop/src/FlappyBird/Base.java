@@ -69,6 +69,11 @@ public class Base {
 		offsetLeft = 0;
 		started = true;
 	}
+	
+	public void onRestart() {
+		offsetLeft = 0;
+		started = false;
+	}
 
 	public void onGameOver() {
 		started = false;
