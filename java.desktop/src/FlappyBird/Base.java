@@ -81,4 +81,13 @@ public class Base {
 	public int getTop() {
 		return boardHeight - tileHeight;
 	}
+	
+	public Rectangle getRectangle() {
+		return new Rectangle(
+				0,
+				getTop(),
+				Settings.WINDOW_WIDTH,
+				tileHeight
+		);
+	}
 }

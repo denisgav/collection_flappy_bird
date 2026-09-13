@@ -1,5 +1,6 @@
 package FlappyBird;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
@@ -8,65 +9,53 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.InputStream;
 
-public class ResourceLoader
-{
+public class ResourceLoader {
+	
+	public static Font loadFont(String relativePath) {
+		try {
+			String path = ResourceLoader.class.getResource(relativePath).getFile();
+			Font font = Font.createFont(Font.TRUETYPE_FONT, new File(path));
+			return font;
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to load font: " + relativePath, e);
+		}
+	}
+
 	public static BufferedImage loadImage(String relativePath) {
 		try {
 			String path = ResourceLoader.class.getResource(relativePath).getFile();
 			return ImageIO.read(new File(path));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("Failed to load image: " + relativePath, e);
 		}
 	}
-	
-	public static BufferedImage scaleImage(
-	        BufferedImage original,
-	        int newWidth,
-	        int newHeight)
-	{
-	    BufferedImage scaled =
-	            new BufferedImage(
-	                    newWidth,
-	                    newHeight,
-	                    BufferedImage.TYPE_INT_ARGB);
 
-	    Graphics2D g2d = scaled.createGraphics();
-	    g2d.setRenderingHint(
-	            RenderingHints.KEY_INTERPOLATION,
-	            RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g2d.drawImage(
-	            original,
-	            0,
-	            0,
-	            newWidth,
-	            newHeight,
-	            null);
-	    g2d.dispose();
+	public static BufferedImage scaleImage(BufferedImage original, int newWidth, int newHeight) {
+		BufferedImage scaled = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
 
-	    return scaled;
+		Graphics2D g2d = scaled.createGraphics();
+		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2d.drawImage(original, 0, 0, newWidth, newHeight, null);
+		g2d.dispose();
+
+		return scaled;
 	}
-	
-    public static BufferedImage flipVerticalImage(BufferedImage source) {
-        BufferedImage result =
-                GraphicsEnvironment
-                        .getLocalGraphicsEnvironment()
-                        .getDefaultScreenDevice()
-                        .getDefaultConfiguration()
-                        .createCompatibleImage(
-                                source.getWidth(),
-                                source.getHeight(),
-                                Transparency.TRANSLUCENT);
 
-        Graphics2D g = result.createGraphics();
+	public static BufferedImage flipVerticalImage(BufferedImage source) {
+		BufferedImage result = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration()
+				.createCompatibleImage(source.getWidth(), source.getHeight(), Transparency.TRANSLUCENT);
 
-        AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-        tx.translate(0, -source.getHeight());
+		Graphics2D g = result.createGraphics();
 
-        g.drawImage(source, tx, null);
-        g.dispose();
+		AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+		tx.translate(0, -source.getHeight());
 
-        return result;
-    }
+		g.drawImage(source, tx, null);
+		g.dispose();
+
+		return result;
+	}
 }

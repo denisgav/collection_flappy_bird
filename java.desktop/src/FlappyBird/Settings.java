@@ -36,4 +36,9 @@ public final class Settings {
 	public static final int PIPE_SPAWNER_POSY_RAND_RANGE_MAX = -RESOURCE_PIPE_HEIGHT + 275;
 	public static final int PIPE_SPAWNER_POSY_GAP = 150;
 	public static final int PIPE_SPAWNER_POS_X = 950;
+	
+	public static final String RESOURCE_MESSAGE_PATH = "./../assets/sprites/message.png";
+	public static final String RESOURCE_GAMEOVER_PATH = "./../assets/sprites/gameover.png";
+	
+	public static final String RESOURCE_FONT_PATH = "./../assets/font/04B_19__.TTF";
 }

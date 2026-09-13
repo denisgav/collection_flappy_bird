@@ -8,10 +8,15 @@ import javax.swing.*;
 public class FlappyBird extends JPanel implements IScoreListener {
 	private static final long serialVersionUID = 1L;
 	
+	private Font font;
+	
 	private Background background;
 	private Base base;
 	private PipeSpawner pipeSpawner;
 	private Player player;
+	
+	private MessageScreen messageScreen;
+	//private GameOverScreen gameOverScreen;
 	
 	private Timer gameLoop;
 	
@@ -28,6 +33,9 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	setFocusable(true);
     	setBackground(Color.blue);
     	
+    	font = ResourceLoader.loadFont(Settings.RESOURCE_FONT_PATH);
+    	font = font.deriveFont(45f);
+    	
     	backBuffer = new BufferedImage(
     			Settings.WINDOW_WIDTH,
     			Settings.WINDOW_HEIGHT,
@@ -39,6 +47,9 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	base = new Base();
     	pipeSpawner = new PipeSpawner();
     	player = new Player();
+    	
+    	messageScreen = new MessageScreen();
+    	//gameOverScreen = new GameOverScreen(null, font);
     	
     	pipeSpawner.setScoreListener(this);
     	
@@ -127,10 +138,14 @@ public class FlappyBird extends JPanel implements IScoreListener {
     private void onGameOver() {
     	is_died = true;
         is_started = false;
+        base.onGameOver();
+        player.onGameOver();
+        pipeSpawner.onGameOver();
     }
     
     public void onScore() {
     	System.out.println("Scored!");
+    	score++;
     }
     
     public void update() {
@@ -138,6 +153,25 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	base.update();
     	pipeSpawner.update();
     	player.update();
+    	
+    	boolean collision = collisionDetect();
+    	if( collision ){
+    		onGameOver();
+    	}
+    }
+    
+    private boolean collisionDetect() {
+    	Rectangle playerRect = player.getRectangle();
+    	Rectangle baseRect = base.getRectangle();
+    	if(playerRect.intersects(baseRect))
+    		return true;
+    	for(Pipe pipe : pipeSpawner.getPipes()) {
+    		Rectangle pipeRect = pipe.getRectangle();
+    		if(playerRect.intersects(pipeRect)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
     
     public void draw(Graphics g) {
@@ -154,5 +188,20 @@ public class FlappyBird extends JPanel implements IScoreListener {
     	pipeSpawner.draw(g);
     	base.draw(g);
     	player.draw(g);
+    	
+    	if(is_started) {
+    		g.setFont(font);
+    		g.drawString(String.valueOf(score), 20, 50);
+        }
+        else
+        {
+            if(is_died == false) {
+                messageScreen.draw(g);
+            }
+            else {
+//                gameOverScreen.setScore(score, high_score);
+//                gameOverScreen.draw(g);
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package FlappyBird;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class Pipe {
@@ -73,6 +74,15 @@ public class Pipe {
 
 	public int getHeight() {
 		return image.getHeight();
+	}
+	
+	public Rectangle getRectangle() {
+		return new Rectangle(
+				getLeft(),
+				getTop(),
+				getWidth(),
+				getHeight()
+		);
 	}
 
 	public void setScoreListener(IScoreListener listener) {

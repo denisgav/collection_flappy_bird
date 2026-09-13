@@ -148,4 +148,13 @@ public class Player
 	public int getHeight() {
 		return Settings.RESOURCE_BIRD_HEIGHT;
 	}
+	
+	public Rectangle getRectangle() {
+		return new Rectangle(
+				getLeft(),
+				getTop(),
+				getWidth(),
+				getHeight()
+		);
+	}
 }
