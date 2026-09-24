@@ -16,12 +16,18 @@ impl Plugin for BasePlugin {
 pub struct BaseState {
     pub started: bool,
     pub offset_left: f32,
+    pub tile_width: f32,
+    pub tile_height: f32,
+    pub tile_count: i32,
+    pub start_x: f32,
+    pub start_y: f32,
 }
 
 #[derive(Component)]
 pub struct BaseTile;
 
 fn spawn_base(
+    mut base: ResMut<BaseState>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
@@ -37,27 +43,27 @@ fn spawn_base(
 
     let aspect_ratio = image_width / image_height;
 
-    let tile_height = window_height * BASE_TO_BACKGROUND_HEIGHT_RATIO;
-    let tile_width = tile_height * aspect_ratio;
-    let tile_count = (window_width / tile_width).ceil() as i32 + 1;
+    base.tile_height = window_height * BASE_TO_BACKGROUND_HEIGHT_RATIO;
+    base.tile_width = base.tile_height * aspect_ratio;
+    base.tile_count = (window_width / base.tile_width).ceil() as i32 + 1;
 
-    let start_x = -(window_width /2.0);
-    let start_y = -(window_height /2.0) + tile_height;
+    base.start_x = -(window_width /2.0);
+    base.start_y = -(window_height /2.0) + base.tile_height;
 
-    for i in 0..tile_count {
+    for i in 0.. base.tile_count {
         commands.spawn((
             Sprite {
                 image: texture.clone(),
                 anchor: Anchor::TopLeft,
                 custom_size: Some(Vec2::new(
-                    tile_width,
-                    tile_height,
+                    base.tile_width,
+                    base.tile_height,
                 )),
                 ..default()
             },
             Transform::from_xyz(
-                start_x + (i as f32) * tile_width,
-                start_y,
+                base.start_x + (i as f32) * base.tile_width,
+                base.start_y,
                 -9.0,
             ),
             BaseTile,
@@ -74,31 +80,17 @@ fn update_base(
         return;
     }
 
-    let speed = BASE_SCROLL_SPEED * 60.0;
+    let speed = BASE_SCROLL_SPEED * time.delta_secs();
+    base.offset_left -= speed;
 
-    for mut transform in &mut query {
-        transform.translation.x -=
-            speed * time.delta_secs();
+    for  (idx, mut transform) in query.iter_mut().enumerate() {
+        transform.translation.x = base.start_x + (idx as f32) * base.tile_width + base.offset_left;
     }
 
-    let image_width = 336.0;
-    let image_height = 112.0;
-
-    let tile_height =
-        WINDOW_HEIGHT as f32 * BASE_TO_BACKGROUND_HEIGHT_RATIO;
-
-    let tile_width =
-        tile_height * (image_width / image_height);
-
-    let right_limit =
-        WINDOW_WIDTH as f32 + tile_width / 2.0;
-
-    for mut transform in &mut query {
-        if transform.translation.x < -tile_width / 2.0 {
-            transform.translation.x +=
-                right_limit + tile_width;
-        }
+    if base.offset_left < -base.tile_width {
+        base.offset_left = 0.0;
     }
+
 }
 
 impl BaseState {

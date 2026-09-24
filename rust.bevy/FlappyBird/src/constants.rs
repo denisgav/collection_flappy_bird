@@ -3,7 +3,6 @@ use bevy::{prelude::*};
 pub const WINDOW_CAPTION: &str = "Flappy Bird";
 pub const WINDOW_WIDTH: u32 = 910;
 pub const WINDOW_HEIGHT: u32 = 512;
-pub const WINDOW_FPS: u32 = 30;
 
 // Background
 pub const RESOURCE_BACKGROUND_DAY_PATH: &str =
@@ -20,7 +19,7 @@ pub const RESOURCE_BASE_WIDTH: u32 = 336;
 pub const RESOURCE_BASE_HEIGHT: u32 = 112;
 
 pub const BASE_TO_BACKGROUND_HEIGHT_RATIO: f32 = 0.22;
-pub const BASE_SCROLL_SPEED: f32 = 2.0;
+pub const BASE_SCROLL_SPEED: f32 = 120.0; // pixels per second
 
 // Bird
 pub const BIRD_START_X: f32 = 100.0;

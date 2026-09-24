@@ -6,10 +6,10 @@ use std::time::Duration;
 use rand::{rngs::ThreadRng, rng, Rng};
 use bevy::{prelude::*, window::PrimaryWindow};
 
-
 use constants::*;
 use background::BackgroundPlugin;
-use base::BasePlugin;
+
+use base::{BasePlugin, BaseState};
 
 fn main() {
     println!("Hello, world!");
@@ -28,6 +28,7 @@ fn main() {
             })
     );
     app.add_systems(Startup, setup_camera);
+    app.add_systems(Update, handle_input);
     app.add_plugins(BackgroundPlugin);
     app.add_plugins(BasePlugin);
     app.run();
@@ -42,4 +43,20 @@ fn setup_camera(mut commands: Commands) {
             0.0,
         ),
     ));
+}
+
+fn handle_input(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    mouse: Res<ButtonInput<MouseButton>>,
+    mut base_state: ResMut<BaseState>,
+) {
+    if keyboard.just_pressed(KeyCode::Space)
+        || mouse.just_pressed(MouseButton::Left)
+    {
+        on_flap(base_state);
+    }
+}
+
+fn on_flap(mut base_state: ResMut<BaseState>){
+    base_state.on_start();
 }
