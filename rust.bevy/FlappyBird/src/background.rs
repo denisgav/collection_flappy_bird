@@ -46,10 +46,12 @@ fn spawn_background(
                 custom_size: Some(Vec2::new(tile_width, tile_height)),
                 ..default()
             },
-            Transform::from_xyz(
-                start_x + (i as f32 * tile_width),
-                0.0,
-                0.0,
+            Transform::from_translation(
+                screen_to_world_xyz(
+                    start_x + (i as f32 * tile_width),
+                    0.0,
+                    -1.0
+                )
             ),
             BackgroundTile,
         ));

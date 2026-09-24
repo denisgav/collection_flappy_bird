@@ -1,5 +1,6 @@
 mod constants;
 mod background;
+mod base;
 
 use std::time::Duration;
 use rand::{rngs::ThreadRng, rng, Rng};
@@ -8,6 +9,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use constants::*;
 use background::BackgroundPlugin;
+use base::BasePlugin;
 
 fn main() {
     println!("Hello, world!");
@@ -27,12 +29,7 @@ fn main() {
     );
     app.add_systems(Startup, setup_camera);
     app.add_plugins(BackgroundPlugin);
-
-    app.insert_resource(Time::<Fixed>::from_duration(
-        Duration::from_secs_f64(1.0 / WINDOW_FPS as f64),
-    ));
-    app.add_systems(FixedUpdate, update_game);
-
+    app.add_plugins(BasePlugin);
     app.run();
 }
 
@@ -42,12 +39,8 @@ fn setup_camera(mut commands: Commands) {
         Camera2d,
         Transform::from_xyz(
             WINDOW_WIDTH as f32 / 2.0,
-            0.0,
+            WINDOW_HEIGHT as f32 / 2.0,
             0.0,
         ),
     ));
-}
-
-fn update_game() {
-    // Runs exactly 30 times per second
 }

@@ -1,3 +1,5 @@
+use bevy::{prelude::*};
+
 pub const WINDOW_CAPTION: &str = "Flappy Bird";
 pub const WINDOW_WIDTH: u32 = 910;
 pub const WINDOW_HEIGHT: u32 = 512;
@@ -13,6 +15,9 @@ pub const RESOURCE_BACKGROUND_HEIGHT: u32 = 512;
 // Base
 pub const RESOURCE_BASE_PATH: &str =
     "sprites/base.png";
+
+pub const RESOURCE_BASE_WIDTH: u32 = 336;
+pub const RESOURCE_BASE_HEIGHT: u32 = 112;
 
 pub const BASE_TO_BACKGROUND_HEIGHT_RATIO: f32 = 0.22;
 pub const BASE_SCROLL_SPEED: f32 = 2.0;
@@ -63,3 +68,20 @@ pub const RESOURCE_GAMEOVER_PATH: &str =
 
 pub const RESOURCE_FONT_PATH: &str =
     "font/04B_19__.TTF";
+
+pub fn screen_to_world_y(y: f32) -> f32 {
+    WINDOW_HEIGHT as f32 - y
+}
+pub fn screen_to_world_xy(x: f32, y: f32) -> Vec2 {
+    Vec2::new(
+        x,
+        screen_to_world_y(y)
+    )
+}
+pub fn screen_to_world_xyz(x: f32, y: f32, z: f32) -> Vec3 {
+    Vec3::new(
+        x,
+        screen_to_world_y(y),
+        z,
+    )
+}
