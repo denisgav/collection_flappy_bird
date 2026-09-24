@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::Anchor};
 
 use crate::constants::*;
 
@@ -39,47 +39,30 @@ fn spawn_base(
 
     let tile_height = window_height * BASE_TO_BACKGROUND_HEIGHT_RATIO;
     let tile_width = tile_height * aspect_ratio;
-    let tile_count = (window_width / tile_width).ceil() as i32 + 2;
+    let tile_count = (window_width / tile_width).ceil() as i32 + 1;
 
-    let y = window_height - tile_height;
+    let start_x = -(window_width /2.0);
+    let start_y = -(window_height /2.0) + tile_height;
 
-    commands.spawn((
+    for i in 0..tile_count {
+        commands.spawn((
             Sprite {
                 image: texture.clone(),
+                anchor: Anchor::TopLeft,
                 custom_size: Some(Vec2::new(
                     tile_width,
                     tile_height,
                 )),
                 ..default()
             },
-            Transform::from_translation(
-                screen_to_world_xyz(
-                    tile_width/2.0 + 10.0,
-                    y,
-                    10.0,
-                )
+            Transform::from_xyz(
+                start_x + (i as f32) * tile_width,
+                start_y,
+                -9.0,
             ),
             BaseTile,
         ));
-
-    // for i in 0..tile_count {
-    //     commands.spawn((
-    //         Sprite {
-    //             image: texture.clone(),
-    //             custom_size: Some(Vec2::new(
-    //                 tile_width,
-    //                 tile_height,
-    //             )),
-    //             ..default()
-    //         },
-    //         Transform::from_xyz(
-    //             tile_width / 2.0 + i as f32 * tile_width,
-    //             y,
-    //             10.0,
-    //         ),
-    //         BaseTile,
-    //     ));
-    // }
+    }
 }
 
 fn update_base(

@@ -1,6 +1,6 @@
 use crate::constants::*;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::Anchor};
 
 pub struct BackgroundPlugin;
 
@@ -37,21 +37,26 @@ fn spawn_background(
     let tile_count =
         (window_width / tile_width).ceil() as i32 + 1;
 
-    let start_x = 0.0;
+    let start_x = -(WINDOW_WIDTH as f32 /2.0);
+    let start_y = WINDOW_HEIGHT as f32 /2.0;
 
     for i in 0..tile_count {
         commands.spawn((
             Sprite {
                 image: texture.clone(),
-                custom_size: Some(Vec2::new(tile_width, tile_height)),
+                anchor: Anchor::TopLeft,
+                custom_size: Some(
+                    Vec2::new(
+                        tile_width, 
+                        tile_height
+                    )
+                ),
                 ..default()
             },
-            Transform::from_translation(
-                screen_to_world_xyz(
-                    start_x + (i as f32 * tile_width),
-                    0.0,
-                    -1.0
-                )
+            Transform::from_xyz(
+                start_x + (i as f32 * tile_width),
+                start_y,
+                -10.0
             ),
             BackgroundTile,
         ));

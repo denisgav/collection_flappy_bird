@@ -34,12 +34,11 @@ fn main() {
 }
 
 fn setup_camera(mut commands: Commands) {
-    // commands.spawn(Camera2d);
     commands.spawn((
         Camera2d,
         Transform::from_xyz(
-            WINDOW_WIDTH as f32 / 2.0,
-            WINDOW_HEIGHT as f32 / 2.0,
+            0.0,
+            0.0,
             0.0,
         ),
     ));
