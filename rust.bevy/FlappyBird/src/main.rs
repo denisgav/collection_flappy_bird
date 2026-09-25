@@ -11,6 +11,14 @@ use background::BackgroundPlugin;
 
 use base::{BasePlugin, BaseState};
 
+#[derive(Resource, Default)]
+pub struct GameState {
+    pub started: bool,
+    pub died: bool,
+    pub score: u32,
+    pub high_score: u32,
+}
+
 fn main() {
     println!("Hello, world!");
     let mut app:App = App::new();
@@ -27,6 +35,7 @@ fn main() {
                 ..Default::default()
             })
     );
+    app.insert_resource(GameState::default());
     app.add_systems(Startup, setup_camera);
     app.add_systems(Update, handle_input);
     app.add_plugins(BackgroundPlugin);
@@ -48,15 +57,44 @@ fn setup_camera(mut commands: Commands) {
 fn handle_input(
     keyboard: Res<ButtonInput<KeyCode>>,
     mouse: Res<ButtonInput<MouseButton>>,
+    mut game_state: ResMut<GameState>,
     mut base_state: ResMut<BaseState>,
 ) {
     if keyboard.just_pressed(KeyCode::Space)
         || mouse.just_pressed(MouseButton::Left)
     {
-        on_flap(base_state);
+        on_flap_action(
+            game_state.as_mut(),
+            base_state.as_mut(),
+        );
     }
 }
 
-fn on_flap(mut base_state: ResMut<BaseState>){
+fn on_flap_action(
+    game_state: &mut GameState,
+    base_state: &mut BaseState,
+) {
+    if !game_state.died {
+        if !game_state.started {
+            on_start(game_state, base_state);
+        }
+
+        on_flap(game_state, base_state);
+    }
+}
+
+fn on_flap(
+    game_state: &mut GameState,
+    base_state: &mut BaseState,
+) {
+    println!("[App] Flap");
+}
+
+fn on_start(
+    game_state: &mut GameState,
+    base_state: &mut BaseState,
+) {
+    println!("[App] Start");
+    game_state.started = true;
     base_state.on_start();
 }
