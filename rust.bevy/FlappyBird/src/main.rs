@@ -2,6 +2,8 @@ mod constants;
 mod background;
 mod base;
 mod player;
+mod pipe;
+mod pipe_spawner;
 
 use std::time::Duration;
 use rand::{rngs::ThreadRng, rng, Rng};
@@ -11,6 +13,7 @@ use constants::*;
 use background::BackgroundPlugin;
 use base::{BasePlugin, BaseState};
 use player::{PlayerPlugin, PlayerState};
+use pipe_spawner::{PipeSpawnerPlugin, PipeSpawnerState};
 
 #[derive(Resource, Default)]
 pub struct GameState {
@@ -42,6 +45,7 @@ fn main() {
     app.add_plugins(BackgroundPlugin);
     app.add_plugins(BasePlugin);
     app.add_plugins(PlayerPlugin);
+    app.add_plugins(PipeSpawnerPlugin);
     app.run();
 }
 
@@ -61,6 +65,7 @@ fn handle_input(
     mouse: Res<ButtonInput<MouseButton>>,
     mut game_state: ResMut<GameState>,
     mut base_state: ResMut<BaseState>,
+    mut pipe_spawner_state: ResMut<PipeSpawnerState>,
     mut player_state: ResMut<PlayerState>,
 ) {
     if keyboard.just_pressed(KeyCode::Space)
@@ -69,6 +74,7 @@ fn handle_input(
         on_flap_action(
             game_state.as_mut(),
             base_state.as_mut(),
+            pipe_spawner_state.as_mut(),
             player_state.as_mut(),
         );
     }
@@ -77,20 +83,19 @@ fn handle_input(
 fn on_flap_action(
     game_state: &mut GameState,
     base_state: &mut BaseState,
+    pipe_spawner_state: &mut PipeSpawnerState,
     player_state: &mut PlayerState,
 ) {
     if !game_state.died {
         if !game_state.started {
-            on_start(game_state, base_state, player_state);
+            on_start(game_state, base_state, pipe_spawner_state, player_state);
         }
 
-        on_flap(game_state, base_state, player_state);
+        on_flap(player_state);
     }
 }
 
 fn on_flap(
-    game_state: &mut GameState,
-    base_state: &mut BaseState,
     player_state: &mut PlayerState,
 ) {
     println!("[App] Flap");
@@ -100,10 +105,12 @@ fn on_flap(
 fn on_start(
     game_state: &mut GameState,
     base_state: &mut BaseState,
+    pipe_spawner_state: &mut PipeSpawnerState,
     player_state: &mut PlayerState,
 ) {
     println!("[App] Start");
     game_state.started = true;
     base_state.on_start();
+    pipe_spawner_state.on_start();
     player_state.on_start();
 }

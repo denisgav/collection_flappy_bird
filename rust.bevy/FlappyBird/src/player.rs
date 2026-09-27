@@ -1,4 +1,4 @@
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{prelude::*};
 
 use crate::constants::*;
 
@@ -8,6 +8,7 @@ impl Plugin for PlayerPlugin{
     fn build(&self, app: &mut App) {
         app.insert_resource(BirdAssets::default());
         app.insert_resource(PlayerState::default());
+        app.add_systems(Startup, load_player_assets);
         app.add_systems(Startup, spawn_player);
         app.add_systems(Update, update_player);
     }
@@ -32,12 +33,10 @@ pub struct PlayerState{
 #[derive(Component)]
 pub struct PlayerTile;
 
-pub fn spawn_player(
-    mut player_state: ResMut<PlayerState>,
+pub fn load_player_assets(
     mut bird_assets: ResMut<BirdAssets>,
-    mut commands: Commands,
     asset_server: Res<AssetServer>,
-) {
+){
     bird_assets.downflap =
         asset_server.load(RESOURCE_BLUEBIRD_DOWNFLAP_PATH);
 
@@ -46,7 +45,13 @@ pub fn spawn_player(
 
     bird_assets.upflap =
         asset_server.load(RESOURCE_BLUEBIRD_UPFLAP_PATH);
+}
 
+pub fn spawn_player(
+    mut player_state: ResMut<PlayerState>,
+    mut bird_assets: ResMut<BirdAssets>,
+    mut commands: Commands,
+) {
     player_state.center_x = BIRD_START_X;
     player_state.center_y = BIRD_START_Y;
     player_state.velocity = 0.0;

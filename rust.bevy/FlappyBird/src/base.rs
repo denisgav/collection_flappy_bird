@@ -64,7 +64,7 @@ fn spawn_base(
             Transform::from_xyz(
                 base_state.start_x + (i as f32) * base_state.tile_width,
                 base_state.start_y,
-                -9.0,
+                -8.0,
             ),
             BaseTile,
         ));
