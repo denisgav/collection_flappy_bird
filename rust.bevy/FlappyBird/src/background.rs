@@ -16,7 +16,6 @@ struct BackgroundTile;
 fn spawn_background(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    windows: Query<&Window>,
 ) {
     let texture: Handle<Image> =
         asset_server.load(RESOURCE_BACKGROUND_DAY_PATH);

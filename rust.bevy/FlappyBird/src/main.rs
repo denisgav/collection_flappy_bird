@@ -1,6 +1,7 @@
 mod constants;
 mod background;
 mod base;
+mod player;
 
 use std::time::Duration;
 use rand::{rngs::ThreadRng, rng, Rng};
@@ -8,8 +9,8 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use constants::*;
 use background::BackgroundPlugin;
-
 use base::{BasePlugin, BaseState};
+use player::{PlayerPlugin, PlayerState};
 
 #[derive(Resource, Default)]
 pub struct GameState {
@@ -40,6 +41,7 @@ fn main() {
     app.add_systems(Update, handle_input);
     app.add_plugins(BackgroundPlugin);
     app.add_plugins(BasePlugin);
+    app.add_plugins(PlayerPlugin);
     app.run();
 }
 
@@ -59,6 +61,7 @@ fn handle_input(
     mouse: Res<ButtonInput<MouseButton>>,
     mut game_state: ResMut<GameState>,
     mut base_state: ResMut<BaseState>,
+    mut player_state: ResMut<PlayerState>,
 ) {
     if keyboard.just_pressed(KeyCode::Space)
         || mouse.just_pressed(MouseButton::Left)
@@ -66,6 +69,7 @@ fn handle_input(
         on_flap_action(
             game_state.as_mut(),
             base_state.as_mut(),
+            player_state.as_mut(),
         );
     }
 }
@@ -73,28 +77,33 @@ fn handle_input(
 fn on_flap_action(
     game_state: &mut GameState,
     base_state: &mut BaseState,
+    player_state: &mut PlayerState,
 ) {
     if !game_state.died {
         if !game_state.started {
-            on_start(game_state, base_state);
+            on_start(game_state, base_state, player_state);
         }
 
-        on_flap(game_state, base_state);
+        on_flap(game_state, base_state, player_state);
     }
 }
 
 fn on_flap(
     game_state: &mut GameState,
     base_state: &mut BaseState,
+    player_state: &mut PlayerState,
 ) {
     println!("[App] Flap");
+    player_state.on_flap();
 }
 
 fn on_start(
     game_state: &mut GameState,
     base_state: &mut BaseState,
+    player_state: &mut PlayerState,
 ) {
     println!("[App] Start");
     game_state.started = true;
     base_state.on_start();
+    player_state.on_start();
 }

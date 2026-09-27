@@ -27,7 +27,7 @@ pub struct BaseState {
 pub struct BaseTile;
 
 fn spawn_base(
-    mut base: ResMut<BaseState>,
+    mut base_state: ResMut<BaseState>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
@@ -43,27 +43,27 @@ fn spawn_base(
 
     let aspect_ratio = image_width / image_height;
 
-    base.tile_height = window_height * BASE_TO_BACKGROUND_HEIGHT_RATIO;
-    base.tile_width = base.tile_height * aspect_ratio;
-    base.tile_count = (window_width / base.tile_width).ceil() as i32 + 1;
+    base_state.tile_height = window_height * BASE_TO_BACKGROUND_HEIGHT_RATIO;
+    base_state.tile_width = base_state.tile_height * aspect_ratio;
+    base_state.tile_count = (window_width / base_state.tile_width).ceil() as i32 + 1;
 
-    base.start_x = -(window_width /2.0);
-    base.start_y = -(window_height /2.0) + base.tile_height;
+    base_state.start_x = -(window_width /2.0);
+    base_state.start_y = -(window_height /2.0) + base_state.tile_height;
 
-    for i in 0.. base.tile_count {
+    for i in 0.. base_state.tile_count {
         commands.spawn((
             Sprite {
                 image: texture.clone(),
                 anchor: Anchor::TopLeft,
                 custom_size: Some(Vec2::new(
-                    base.tile_width,
-                    base.tile_height,
+                    base_state.tile_width,
+                    base_state.tile_height,
                 )),
                 ..default()
             },
             Transform::from_xyz(
-                base.start_x + (i as f32) * base.tile_width,
-                base.start_y,
+                base_state.start_x + (i as f32) * base_state.tile_width,
+                base_state.start_y,
                 -9.0,
             ),
             BaseTile,
@@ -72,23 +72,26 @@ fn spawn_base(
 }
 
 fn update_base(
-    mut base: ResMut<BaseState>,
-    mut query: Query<&mut Transform, With<BaseTile>>,
     time: Res<Time>,
+    mut base_state: ResMut<BaseState>,
+    mut query: Query<
+        &mut Transform, 
+        With<BaseTile>
+    >,
 ) {
-    if !base.started {
+    if !base_state.started {
         return;
     }
 
     let speed = BASE_SCROLL_SPEED * time.delta_secs();
-    base.offset_left -= speed;
+    base_state.offset_left -= speed;
 
     for  (idx, mut transform) in query.iter_mut().enumerate() {
-        transform.translation.x = base.start_x + (idx as f32) * base.tile_width + base.offset_left;
+        transform.translation.x = base_state.start_x + (idx as f32) * base_state.tile_width + base_state.offset_left;
     }
 
-    if base.offset_left < -base.tile_width {
-        base.offset_left = 0.0;
+    if base_state.offset_left < -base_state.tile_width {
+        base_state.offset_left = 0.0;
     }
 
 }

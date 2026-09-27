@@ -22,13 +22,13 @@ pub const BASE_TO_BACKGROUND_HEIGHT_RATIO: f32 = 0.22;
 pub const BASE_SCROLL_SPEED: f32 = 120.0; // pixels per second
 
 // Bird
-pub const BIRD_START_X: f32 = 100.0;
-pub const BIRD_START_Y: f32 = 300.0;
+pub const BIRD_START_X: f32 = 0.0;
+pub const BIRD_START_Y: f32 = 0.0;
 
-pub const BIRD_ACCELERATION: f32 = 0.25;
-pub const BIRD_MAX_VELOCITY: f32 = 8.0;
-pub const BIRD_FLAP_VELOCITY: f32 = -7.0;
-pub const BIRD_ANGULAR_SPEED: f32 = 7.0;
+pub const BIRD_ACCELERATION: f32 = 900.0; // Num of pixels per second
+pub const BIRD_MAX_VELOCITY: f32 = 400.0;
+pub const BIRD_FLAP_VELOCITY: f32 = 300.0;
+pub const BIRD_ANGULAR_SPEED: f32 = 0.12;
 
 pub const RESOURCE_BIRD_WIDTH: u32 = 34;
 pub const RESOURCE_BIRD_HEIGHT: u32 = 24;
