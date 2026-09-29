@@ -27,6 +27,28 @@ pub struct GameState {
     pub high_score: u32,
 }
 
+#[derive(Component)]
+struct MessageScreenUI;
+
+#[derive(Component)]
+struct GameOverScreenUI;
+
+#[derive(Component)]
+struct ScoreUI;
+
+#[derive(Component)]
+struct ScoreText;
+
+#[derive(Component)]
+struct GameOverScoreText;
+
+#[derive(Component)]
+struct GameOverBestText;
+
+#[derive(Component)]
+struct RestartButton;
+
+
 fn main() {
     println!("Hello, world!");
     let mut app:App = App::new();
@@ -44,13 +66,24 @@ fn main() {
             })
     );
     app.insert_resource(GameState::default());
-    app.add_systems(Startup, setup_camera);
+    app.add_systems(Startup,
+         (
+            setup_camera,
+            spawn_message_screen,
+            spawn_score_ui,
+            spawn_game_over_ui
+        )
+    );
     app.add_systems(Update, 
         (
             handle_input,
             score_system,
             pipe_collision_system,
             base_collision_system,
+            restart_button_system,
+            update_ui_visibility,
+            update_score_ui,
+            update_game_over_ui,
         )
     );
     app.add_plugins(BackgroundPlugin);
@@ -90,6 +123,202 @@ fn handle_input(
         );
     }
 }
+
+fn spawn_message_screen(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    commands.spawn((
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            ..default()
+        },
+        MessageScreenUI,
+    ))
+    .with_children(|parent| {
+        parent.spawn(
+            ImageNode::new(
+                asset_server.load(
+                    RESOURCE_MESSAGE_PATH
+                )
+            )
+        );
+    });
+}
+
+fn spawn_score_ui(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    commands.spawn((
+        Text::new("0"),
+        TextFont {
+            font: asset_server.load(RESOURCE_FONT_PATH),
+            font_size: 45.0,
+            ..default()
+        },
+        TextColor(Color::WHITE),
+        Node {
+            position_type: PositionType::Absolute,
+            left: Val::Px(20.0),
+            top: Val::Px(20.0),
+            ..default()
+        },
+        Visibility::Hidden,
+        ScoreUI,
+        ScoreText,
+    ));
+}
+
+fn spawn_game_over_ui(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    commands.spawn((
+        Node {
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            flex_direction: FlexDirection::Column,
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            ..default()
+        },
+        Visibility::Hidden,
+        GameOverScreenUI,
+    ))
+    .with_children(|parent| {
+
+        parent.spawn(
+            ImageNode::new(
+                asset_server.load(
+                    RESOURCE_GAMEOVER_PATH
+                )
+            )
+        );
+
+        parent.spawn((
+            Text::new("Score: 0"),
+            TextFont {
+                font: asset_server.load(RESOURCE_FONT_PATH),
+                font_size: 45.0,
+                ..default()
+            },
+            TextColor(Color::WHITE),
+            GameOverScoreText,
+        ));
+
+        parent.spawn((
+            Text::new("Best: 0"),
+            TextFont {
+                font: asset_server.load(RESOURCE_FONT_PATH),
+                font_size: 45.0,
+                ..default()
+            },
+            TextColor(Color::WHITE),
+            GameOverBestText,
+        ));
+
+        parent.spawn((
+            Button,
+            Node {
+                width: Val::Px(150.0),
+                height: Val::Px(50.0),
+                margin: UiRect::all(Val::Px(10.0)),
+                ..default()
+            },
+            RestartButton,
+        ))
+        .with_child(Text::new("Restart"));
+    });
+}
+
+fn restart_button_system(
+    mut interaction_query: Query<
+        &Interaction,
+        (
+            Changed<Interaction>,
+            With<RestartButton>,
+        ),
+    >,
+    mut game_state: ResMut<GameState>,
+    mut base_state: ResMut<BaseState>,
+    mut pipe_spawner_state: ResMut<PipeSpawnerState>,
+    mut player_state: ResMut<PlayerState>,
+) {
+    for interaction in &mut interaction_query {
+
+        if *interaction == Interaction::Pressed {
+            on_restart(
+                game_state.as_mut(),
+                base_state.as_mut(),
+                pipe_spawner_state.as_mut(),
+                player_state.as_mut()
+            );
+        }
+    }
+}
+
+fn update_ui_visibility(
+    game_state: Res<GameState>,
+    mut vis: ParamSet<(
+        Query<&mut Visibility, With<MessageScreenUI>>,
+        Query<&mut Visibility, With<ScoreUI>>,
+        Query<&mut Visibility, With<GameOverScreenUI>>,
+    )>,
+) {
+    if let Ok(mut v) = vis.p0().single_mut() {
+        *v = if !game_state.started && !game_state.died {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+
+    if let Ok(mut v) = vis.p1().single_mut() {
+        *v = if game_state.started && !game_state.died {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+
+    if let Ok(mut v) = vis.p2().single_mut() {
+        *v = if game_state.died {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+}
+
+fn update_score_ui(
+    game_state: Res<GameState>,
+    mut query: Query<&mut Text, With<ScoreText>>,
+) {
+    if let Ok(mut text) = query.single_mut() {
+        text.0 = game_state.score.to_string();
+    }
+}
+
+fn update_game_over_ui(
+    game_state: Res<GameState>,
+    mut texts: ParamSet<(
+        Query<&mut Text, With<GameOverScoreText>>,
+        Query<&mut Text, With<GameOverBestText>>,
+    )>,
+) {
+    if let Ok(mut text) = texts.p0().single_mut() {
+        text.0 = format!("Score: {}", game_state.score);
+    }
+
+    if let Ok(mut text) = texts.p1().single_mut() {
+        text.0 = format!("Best: {}", game_state.high_score);
+    }
+}
+
 
 fn score_system(
     mut game_state: ResMut<GameState>,
@@ -232,6 +461,7 @@ fn on_restart(
 ) {
     println!("[App] ReStart");
 
+    game_state.score = 0;
     game_state.died = false;
     game_state.started = false;
 
@@ -254,10 +484,7 @@ fn on_game_over(
     player_state.on_game_over();
     pipe_spawner_state.on_game_over();
     
-    // gameOverScreen.setScore(score, high_score);
-    // gameOverScreen.onShow();
-    
-    if(game_state.score > game_state.high_score) {
+    if game_state.score > game_state.high_score {
         game_state.high_score = game_state.score;
     }
 }

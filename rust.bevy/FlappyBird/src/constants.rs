@@ -1,5 +1,3 @@
-use bevy::{prelude::*};
-
 pub const WINDOW_CAPTION: &str = "Flappy Bird";
 pub const WINDOW_WIDTH: u32 = 910;
 pub const WINDOW_HEIGHT: u32 = 512;
