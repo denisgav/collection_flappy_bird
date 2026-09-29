@@ -1,6 +1,7 @@
 use bevy::{prelude::*};
 
 use crate::constants::*;
+use crate::fbrect::*;
 
 pub struct PlayerPlugin;
 
@@ -183,5 +184,20 @@ impl PlayerState {
         self.velocity = 0.0;
         self.started = false;
         self.animation_index = 0;
+    }
+
+    pub fn get_rect(&self) -> FBRect{
+        let half_w =
+            RESOURCE_BIRD_WIDTH as f32 / 2.0;
+        
+        let half_h =
+            RESOURCE_BIRD_HEIGHT as f32 / 2.0;
+        
+        return FBRect {
+            left: self.center_x - half_w,
+            right: self.center_x + half_w,
+            top: self.center_y + half_h,
+            bottom: self.center_y - half_h,
+        };
     }
 }

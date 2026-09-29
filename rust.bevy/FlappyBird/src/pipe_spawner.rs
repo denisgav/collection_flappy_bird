@@ -3,7 +3,6 @@ use rand::Rng;
 
 use crate::constants::*;
 use crate::pipe::*;
-
 pub struct PipeSpawnerPlugin;
 
 impl Plugin for PipeSpawnerPlugin {
@@ -15,7 +14,6 @@ impl Plugin for PipeSpawnerPlugin {
         app.add_systems(Update, (
             spawn_pipe_system,
             update_pipes_system,
-            score_system
         ));
     }
 }
@@ -150,11 +148,16 @@ fn spawn_pipe_system(
 
 fn update_pipes_system(
     mut commands: Commands,
+    mut state: ResMut<PipeSpawnerState>,
     time: Res<Time>,
     mut query: Query<
         (Entity, &mut Transform, &mut Pipe)
     >,
 ) {
+    if !state.started {
+        return;
+    }
+    
     for (entity, mut transform, _) in &mut query {
 
         transform.translation.x -=
@@ -165,45 +168,6 @@ fn update_pipes_system(
             -(WINDOW_WIDTH as f32)
         {
             commands.entity(entity).despawn();
-        }
-    }
-}
-
-fn score_system(
-    mut query: Query<(
-        &Transform,
-        &mut Pipe,
-    )>,
-) {
-    for (transform, mut pipe) in &mut query {
-
-        if pipe.is_top {
-            continue;
-        }
-
-        let left =
-            transform.translation.x
-            - RESOURCE_PIPE_WIDTH as f32 / 2.0;
-
-        let right =
-            transform.translation.x
-            + RESOURCE_PIPE_WIDTH as f32 / 2.0;
-
-        if BIRD_START_X as f32 > left {
-            pipe.bird_enter = true;
-        }
-
-        if BIRD_START_X as f32 > right {
-            pipe.bird_exit = true;
-        }
-
-        if pipe.bird_enter
-            && pipe.bird_exit
-            && !pipe.bird_passed
-        {
-            pipe.bird_passed = true;
-
-            println!("Score +1");
         }
     }
 }

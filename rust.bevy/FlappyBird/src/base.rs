@@ -1,6 +1,7 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::constants::*;
+use crate::fbrect::FBRect;
 
 pub struct BasePlugin;
 
@@ -109,5 +110,14 @@ impl BaseState {
 
     pub fn on_game_over(&mut self) {
         self.started = false;
+    }
+
+    pub fn get_rect(&self) -> FBRect{
+        return FBRect {
+            left: -(WINDOW_WIDTH as f32) / 2.0,
+            right: (WINDOW_WIDTH as f32) / 2.0,
+            top: -(WINDOW_HEIGHT as f32) / 2.0 + RESOURCE_BASE_HEIGHT as f32,
+            bottom: -(WINDOW_HEIGHT as f32) / 2.0,
+        };
     }
 }
