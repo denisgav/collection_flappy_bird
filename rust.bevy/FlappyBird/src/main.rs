@@ -25,6 +25,7 @@ pub struct GameState {
     pub died: bool,
     pub score: u32,
     pub high_score: u32,
+    pub restart_cooldown: bool,
 }
 
 #[derive(Component)]
@@ -112,6 +113,11 @@ fn handle_input(
     mut pipe_spawner_state: ResMut<PipeSpawnerState>,
     mut player_state: ResMut<PlayerState>,
 ) {
+    if game_state.restart_cooldown {
+        game_state.restart_cooldown = false;
+        return;
+    }
+
     if keyboard.just_pressed(KeyCode::Space)
         || mouse.just_pressed(MouseButton::Left)
     {
@@ -224,18 +230,30 @@ fn spawn_game_over_ui(
         parent.spawn((
             Button,
             Node {
-                width: Val::Px(150.0),
-                height: Val::Px(50.0),
+                width: Val::Px(180.0),
+                height: Val::Px(60.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
                 margin: UiRect::all(Val::Px(10.0)),
                 ..default()
             },
+            BackgroundColor(Color::srgb(0.2, 0.2, 0.2)),
             RestartButton,
         ))
-        .with_child(Text::new("Restart"));
+        .with_child((
+            Text::new("RST"),
+            TextFont {
+                font: asset_server.load(RESOURCE_FONT_PATH),
+                font_size: 32.0,
+                ..default()
+            },
+            TextColor(Color::WHITE),
+        ));
     });
 }
 
 fn restart_button_system(
+    mut commands: Commands,
     mut interaction_query: Query<
         &Interaction,
         (
@@ -243,6 +261,7 @@ fn restart_button_system(
             With<RestartButton>,
         ),
     >,
+    pipes: Query<Entity, With<Pipe>>,
     mut game_state: ResMut<GameState>,
     mut base_state: ResMut<BaseState>,
     mut pipe_spawner_state: ResMut<PipeSpawnerState>,
@@ -251,6 +270,10 @@ fn restart_button_system(
     for interaction in &mut interaction_query {
 
         if *interaction == Interaction::Pressed {
+            for entity in &pipes {
+                commands.entity(entity).despawn();
+            }
+
             on_restart(
                 game_state.as_mut(),
                 base_state.as_mut(),
@@ -464,6 +487,7 @@ fn on_restart(
     game_state.score = 0;
     game_state.died = false;
     game_state.started = false;
+    game_state.restart_cooldown = true;
 
     base_state.on_restart();
     pipe_spawner_state.on_restart();
