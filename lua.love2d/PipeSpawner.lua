@@ -125,6 +125,12 @@ function PipeSpawner:onGameOver()
     self.isStarted = false
 end
 
+function PipeSpawner:onReStart()
+    self.isStarted = false
+    self.pipes = {}
+    self.pipeTimer = 0
+end
+
 function PipeSpawner:checkCollision(playerRect)
 
     for _, pipe in ipairs(self.pipes) do

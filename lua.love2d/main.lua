@@ -2,6 +2,9 @@ local Background = require("Background")
 local Base = require("Base")
 local Player = require("Player")
 local PipeSpawner = require("PipeSpawner")
+local MessageScreen = require("MessageScreen")
+local GameOverScreen = require("GameOverScreen")
+
 
 local BIRD_START_POS_X = 150
 local BIRD_START_POS_Y = 300
@@ -46,6 +49,12 @@ function love.load()
     pipe_spawner = 
         PipeSpawner("assets/sprites/pipe-green.png")
     pipe_spawner.scoreListener = onScore
+
+    message_screen = 
+        MessageScreen("assets/sprites/message.png")
+
+    game_over_screen = 
+        GameOverScreen(scoreFont, "assets/sprites/gameover.png")
 end
 
 local function onFlap()
@@ -64,6 +73,21 @@ local function onGameOver()
     player:onGameOver()
     pipe_spawner:onGameOver()
     base:onGameOver()
+
+    if score > high_score then
+        high_score = score
+    end
+
+    game_over_screen:setScore(score, high_score)
+end
+
+local function onReStart()
+    isDied = false
+    isStarted = false
+    score = 0
+
+    pipe_spawner:onReStart()
+    player:onReStart()
 end
 
 local function handleFlap()
@@ -84,6 +108,13 @@ end
 
 function love.mousepressed(x, y, button)
     if button == 1 then
+        if isDied then
+            if game_over_screen:isRestartBtnClicked(x, y) then
+                onReStart()
+            end
+            return
+        end
+
         handleFlap()
     end
 end
@@ -157,7 +188,13 @@ function love.draw()
     base:draw()
     player:draw()
 
-    love.graphics.setFont(scoreFont)
-
-    drawScore()
+    if isDied then
+        game_over_screen:draw()
+    else
+        if isStarted == false then
+            message_screen:draw()
+        else
+            drawScore()
+        end
+    end
 end

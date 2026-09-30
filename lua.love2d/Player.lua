@@ -22,6 +22,9 @@ function Player:new(
 
     self.image = self.frames[1]
 
+    self.initial_pos_x = x
+    self.initial_pos_y = y
+
     self.x = x
     self.y = y
 
@@ -116,6 +119,16 @@ end
 function Player:onGameOver()
     self.isStarted = false
     self.velocity = 0
+end
+
+function Player:onReStart()
+    self.isStarted = false
+    self.velocity = 0
+
+    self.x = self.initial_pos_x
+    self.y = self.initial_pos_y
+
+    self.rotation = 0
 end
 
 function Player:getRect()
