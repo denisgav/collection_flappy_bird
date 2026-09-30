@@ -1,6 +1,11 @@
 local Background = require("Background")
 local Base = require("Base")
 local Player = require("Player")
+local PipeSpawner = require("PipeSpawner")
+
+local BIRD_START_POS_X = 150
+local BIRD_START_POS_Y = 300
+local BASE_SCROLL_SPEED = 180
 
 local isStarted = false
 local isDied = false
@@ -15,18 +20,21 @@ function love.load()
     base =
         Base(
             "assets/sprites/base.png",
-            180,      -- px/sec
+            BASE_SCROLL_SPEED,      -- px/sec
             0.22
         )
 
     player =
         Player(
-            150,
-            300,
+            BIRD_START_POS_X,
+            BIRD_START_POS_Y,
             "assets/sprites/bluebird-downflap.png",
             "assets/sprites/bluebird-midflap.png",
             "assets/sprites/bluebird-upflap.png"
         )
+
+    pipe_spawner = 
+        PipeSpawner("assets/sprites/pipe-green.png")
 end
 
 local function onFlap()
@@ -35,6 +43,7 @@ end
 
 local function onStart()
     base:onStart()
+    pipe_spawner:onStart()
     player:onStart()
 end
 
@@ -67,11 +76,13 @@ end
 function love.update(dt)
     background:update()
     base:update(dt)
+    pipe_spawner:update(dt)
     player:update(dt)
 end
 
 function love.draw()
     background:draw()
+    pipe_spawner:draw()
     base:draw()
     player:draw()
 end

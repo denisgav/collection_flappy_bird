@@ -2,10 +2,10 @@ local Object = require("classic")
 
 local Player = Object:extend()
 
-local BIRD_FLAP_VELOCITY = -320      -- px/sec
-local BIRD_ACCELERATION = 900        -- px/sec^2
+local BIRD_FLAP_VELOCITY = -300      -- px/sec
+local BIRD_ACCELERATION = 850       -- px/sec^2
 local BIRD_MAX_VELOCITY = 400        -- px/sec
-local BIRD_ANGULAR_SPEED = 0.15      -- deg per (px/sec)
+local BIRD_ANGULAR_SPEED = 0.16      -- deg per (px/sec)
 
 function Player:new(
         x,
