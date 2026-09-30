@@ -12,7 +12,17 @@ local isDied = false
 local score = 0
 local high_score = 0
 
+local function onScore()
+    score = score + 1
+end
+
 function love.load()
+
+    scoreFont =
+        love.graphics.newFont(
+            "assets/font/04B_19__.TTF",
+            48
+        )
 
     background =
         Background("assets/sprites/background-day.png")
@@ -35,6 +45,7 @@ function love.load()
 
     pipe_spawner = 
         PipeSpawner("assets/sprites/pipe-green.png")
+    pipe_spawner.scoreListener = onScore
 end
 
 local function onFlap()
@@ -85,5 +96,15 @@ function love.draw()
     pipe_spawner:draw()
     base:draw()
     player:draw()
+
+    love.graphics.setFont(scoreFont)
+
+    love.graphics.printf(
+        tostring(score),
+        50,
+        50,
+        love.graphics.getWidth(),
+        "left"
+    )
 end
 
