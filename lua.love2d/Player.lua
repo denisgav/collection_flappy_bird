@@ -118,4 +118,17 @@ function Player:onGameOver()
     self.velocity = 0
 end
 
+function Player:getRect()
+
+    local w = self.image:getWidth()
+    local h = self.image:getHeight()
+
+    return {
+        w = w,
+        h = h,
+        x = self.x - w / 2,
+        y = self.y - h / 2
+    }
+end
+
 return Player

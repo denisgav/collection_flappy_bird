@@ -81,4 +81,14 @@ function Pipe:draw()
     end
 end
 
+function Pipe:getRect()
+
+    return {
+        x = self.x,
+        y = self.y,
+        w = self.width,
+        h = self.height
+    }
+end
+
 return Pipe

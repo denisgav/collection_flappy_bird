@@ -90,4 +90,8 @@ function Base:onGameOver()
     self.isStarted = false
 end
 
+function Base:getTopY()
+    return self.screenHeight - self.tileHeight
+end
+
 return Base

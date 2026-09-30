@@ -58,6 +58,14 @@ local function onStart()
     player:onStart()
 end
 
+local function onGameOver()
+    isDied = true
+
+    player:onGameOver()
+    pipe_spawner:onGameOver()
+    base:onGameOver()
+end
+
 local function handleFlap()
     if isDied == false then
         if isStarted == false then
@@ -89,6 +97,58 @@ function love.update(dt)
     base:update(dt)
     pipe_spawner:update(dt)
     player:update(dt)
+
+    if not isDied then
+
+        local birdRect = player:getRect()
+
+        if pipe_spawner:checkCollision(birdRect) then
+            onGameOver()
+        end
+
+        if birdRect.y + birdRect.h >=
+            base:getTopY() then
+            onGameOver()
+        end
+    end
+end
+
+local function drawScore()
+    local text = tostring(score)
+
+    love.graphics.setFont(scoreFont)
+
+    local y = 50
+
+    -- outline
+    love.graphics.setColor(0.85, 0.55, 0.15)
+
+    for dx = -2, 2 do
+        for dy = -2, 2 do
+            if dx ~= 0 or dy ~= 0 then
+                love.graphics.printf(
+                    text,
+                    50+dx,
+                    y + dy,
+                    love.graphics.getWidth(),
+                    "left"
+                )
+            end
+        end
+    end
+
+    -- foreground
+    love.graphics.setColor(1, 1, 1)
+
+    love.graphics.printf(
+        text,
+        50,
+        y,
+        love.graphics.getWidth(),
+        "left"
+    )
+
+    love.graphics.setColor(1, 1, 1)
 end
 
 function love.draw()
@@ -99,12 +159,5 @@ function love.draw()
 
     love.graphics.setFont(scoreFont)
 
-    love.graphics.printf(
-        tostring(score),
-        50,
-        50,
-        love.graphics.getWidth(),
-        "left"
-    )
+    drawScore()
 end
-

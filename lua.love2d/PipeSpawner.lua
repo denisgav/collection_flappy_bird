@@ -1,6 +1,7 @@
 local Object = require("classic")
 local Pipe = require("Pipe")
 
+local Collision = require("Collision")
 local PipeSpawner = Object:extend()
 
 local RESOURCE_PIPE_WIDTH = 52
@@ -92,17 +93,19 @@ function PipeSpawner:update(dt)
     -- Update pipes
     ----------------------------------------------------------------
 
-    for i = #self.pipes, 1, -1 do
+    if self.isStarted then
+        for i = #self.pipes, 1, -1 do
 
-        local pipe = self.pipes[i]
+            local pipe = self.pipes[i]
 
-        pipe:update(dt)
+            pipe:update(dt)
 
-        if pipe.isDead then
-            table.remove(
-                self.pipes,
-                i
-            )
+            if pipe.isDead then
+                table.remove(
+                    self.pipes,
+                    i
+                )
+            end
         end
     end
 end
@@ -120,6 +123,23 @@ end
 
 function PipeSpawner:onGameOver()
     self.isStarted = false
+end
+
+function PipeSpawner:checkCollision(playerRect)
+
+    for _, pipe in ipairs(self.pipes) do
+
+        local pipeRect = pipe:getRect()
+
+        if Collision.rectsOverlap(
+                playerRect,
+                pipeRect) then
+
+            return true
+        end
+    end
+
+    return false
 end
 
 return PipeSpawner
