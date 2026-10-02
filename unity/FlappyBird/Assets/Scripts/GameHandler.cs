@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
 {
@@ -13,7 +15,12 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
 
     public GameObject messagePanel;
 
-    public GameObject gameOverPanel;
+    public TextMeshProUGUI gameOverScoreText;
+    public TextMeshProUGUI gameOverHighScoreText;
+
+    public GameObject gameOverCanvas;
+
+    public Button restartButton;
 
     private bool isStarted = false;
     private bool isGameOver = false;
@@ -37,6 +44,8 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
         m_Actions = new MyInputActions();                     // Create asset object.
         m_PlayerActions = m_Actions.Player;                   // Extract action map object.
         m_PlayerActions.AddCallbacks(this);                   // Register callback interface IPlayerActions.
+
+        restartButton.onClick.AddListener(OnRestartClicked);
         
         UpdateUI();
     }
@@ -44,6 +53,13 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
     void OnDestroy()
     {
         m_Actions.Dispose();                              // Destroy asset object.
+        restartButton.onClick.RemoveListener(OnRestartClicked);
+    }
+
+    private void OnRestartClicked()
+    {
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().buildIndex);
     }
 
     void OnEnable()
@@ -102,6 +118,15 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
     {
         isGameOver = true;
         isStarted = false;
+
+        if(score > highScore)
+        {
+            highScore = score;
+        }
+
+        gameOverScoreText.text = "SCORE: " + score.ToString();
+        gameOverHighScoreText.text = "BEST: " + highScore.ToString();
+
         player.OnGameOver();
         pipeSpawner.OnGameOver();
         ground.OnGameOver();
@@ -127,7 +152,7 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
         {
             messagePanel.SetActive(true);
             scoreCanvas.SetActive(false);
-            gameOverPanel.SetActive(false);
+            gameOverCanvas.SetActive(false);
         }
         else
         {
@@ -135,13 +160,13 @@ public class GameHandler : MonoBehaviour, MyInputActions.IPlayerActions
             {
                 messagePanel.SetActive(false);
                 scoreCanvas.SetActive(false);
-                gameOverPanel.SetActive(true);
+                gameOverCanvas.SetActive(true);
             }
             else
             {
                 messagePanel.SetActive(false);
                 scoreCanvas.SetActive(true);
-                gameOverPanel.SetActive(false);
+                gameOverCanvas.SetActive(false);
             }
         }
         
