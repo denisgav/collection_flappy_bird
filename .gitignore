@@ -1,5 +1,7 @@
 
-/pygame/.venv
-/pygame/__pycache__
+/python.pygame/.venv
+/python.pygame/__pycache__
 rust.bevy/FlappyBird/src/main.rs.bck
 /rust.bevy/FlappyBird/target
+/unity/FlappyBird/Library
+/unity/FlappyBird/Logs
