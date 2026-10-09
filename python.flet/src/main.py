@@ -1,25 +1,29 @@
 import flet as ft
+import flet.canvas as cv
 
+from settings import *
 
 def main(page: ft.Page):
-    counter = ft.Text("0", size=50, data=0)
 
-    def increment_click(e: ft.Event[ft.FloatingActionButton]):
-        counter.data += 1
-        counter.value = str(counter.data)
+    page.title = WINDOW_CAPTION
+    page.window.width = WINDOW_WIDTH
+    page.window.height = WINDOW_HEIGHT
 
-    page.floating_action_button = ft.FloatingActionButton(
-        icon=ft.Icons.ADD, key="increment", on_click=increment_click
+    canvas = cv.Canvas(
+        [
+            cv.Image(
+                x=0,
+                y=0,
+                src=RESOURCE_BACGROUND_DAY_PATH,
+                width=RESOURCE_BACGROUND_WIDTH,
+                height=RESOURCE_BACGROUND_HEIGHT,
+            )
+        ],
+        width=800,
+        height=600,
     )
-    page.add(
-        ft.SafeArea(
-            expand=True,
-            content=ft.Container(
-                content=counter,
-                alignment=ft.Alignment.CENTER,
-            ),
-        )
-    )
+
+    page.add(canvas)
 
 
 if __name__ == "__main__":
