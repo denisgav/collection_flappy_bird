@@ -37,43 +37,6 @@ body {
     z-index: 10;
 }
 
-/* #score {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 32px;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px black;
-}
-
-#start-screen,
-#game-over-screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-} */
-
 .hidden {
     display: none !important;
 }
-
-/* button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    border: none;
-    background: #ffcc00;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-button:hover {
-    background: #ffdd33;
-} */
