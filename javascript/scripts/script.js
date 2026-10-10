@@ -14,7 +14,7 @@ const BIRD_ACCELERATION = 0.5;
 const BIRD_ANGULAR_SPEED = 4;
 const BIRD_MAX_VELOCITY = 18;
 
-const BASE_SCROLL_SPEED = 2;
+const BASE_SCROLL_SPEED = 4;
 
 // Resource paths
 const RESOURCE_SPRITES_PATH = "assets/sprites";
@@ -59,7 +59,7 @@ const RESOURCE_FONT_PATH =
 
 // Pipe spawner
 const PIPE_SPAWNER_POS_X = 950;
-const PIPE_SPAWNER_TIMEOUT = 180;
+const PIPE_SPAWNER_TIMEOUT = 60;
 
 const PIPE_SPAWNER_POSY_RAND_RANGE_MIN =
     -RESOURCE_PIPE_HEIGHT + 25;
@@ -67,7 +67,7 @@ const PIPE_SPAWNER_POSY_RAND_RANGE_MIN =
 const PIPE_SPAWNER_POSY_RAND_RANGE_MAX =
     -RESOURCE_PIPE_HEIGHT + 275;
 
-const PIPE_SPAWNER_POSY_GAP = 100;
+const PIPE_SPAWNER_POSY_GAP = 120;
 
 // Message sprite
 const RESOURCE_MESSAGE_WIDTH = 184;
@@ -80,6 +80,65 @@ const RESOURCE_GAMEOVER_WIDTH = 192;
 const RESOURCE_GAMEOVER_HEIGHT = 42;
 const RESOURCE_GAMEOVER_PATH =
     `${RESOURCE_SPRITES_PATH}/gameover.png`;
+
+class Rect {
+    constructor(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    get left() {
+        return this.x;
+    }
+
+    get right() {
+        return this.x + this.width;
+    }
+
+    get top() {
+        return this.y;
+    }
+
+    get bottom() {
+        return this.y + this.height;
+    }
+
+    get centerX() {
+        return this.x + this.width / 2;
+    }
+
+    get centerY() {
+        return this.y + this.height / 2;
+    }
+
+    set centerX(value) {
+        this.x = value - this.width / 2;
+    }
+
+    set centerY(value) {
+        this.y = value - this.height / 2;
+    }
+
+    intersects(other) {
+        return (
+            this.left < other.right &&
+            this.right > other.left &&
+            this.top < other.bottom &&
+            this.bottom > other.top
+        );
+    }
+
+    containsPoint(x, y) {
+        return (
+            x >= this.left &&
+            x <= this.right &&
+            y >= this.top &&
+            y <= this.bottom
+        );
+    }
+}
 
 class Background {
     constructor(imagePath) {
@@ -168,6 +227,16 @@ class Base {
     onGameOver() {
         this.isStarted = false;
     }
+
+    getRect() {
+        const yOffset = CANVAS_HEIGHT - this.tileHeight;
+        return new Rect(
+            0,
+            yOffset,
+            CANVAS_WIDTH, 
+            this.tileHeight
+        );
+    }
 }
 
 class Player {
@@ -189,12 +258,12 @@ class Player {
 
         this.image = this.birdImages[0];
 
-        this.rect = {
-            centerX: BIRD_START_POS.x,
-            centerY: BIRD_START_POS.y,
-            width: RESOURCE_BIRD_WIDTH,
-            height: RESOURCE_BIRD_HEIGHT
-        };
+        this.rect = new Rect(
+            BIRD_START_POS.x - RESOURCE_BIRD_WIDTH/2,
+            BIRD_START_POS.y - RESOURCE_BIRD_HEIGHT/2,
+            RESOURCE_BIRD_WIDTH,
+            RESOURCE_BIRD_HEIGHT
+        );
 
         this.imageAnimationIndex = 0;
         this.isStarted = false;
@@ -282,18 +351,32 @@ class Player {
         this.isStarted = false;
         this.velocity = 0.0;
     }
+
+    onRestart(){
+        this.isStarted = false;
+        this.velocity = 0.0;
+
+        this.imageAnimationIndex = 0;
+
+        this.rect.centerY = BIRD_START_POS.y;
+        this.rect.centerX = BIRD_START_POS.x;
+    }
+
+    getRect() {
+        return this.rect;
+    }
 }
 
 class Pipe {
     constructor(x, y, pipeImgBottom, isTop = false) {
         this.pipeImgBottom = pipeImgBottom;
 
-        this.rect = {
-            x: x,
-            y: y,
-            width: RESOURCE_PIPE_WIDTH,
-            height: RESOURCE_PIPE_HEIGHT
-        };
+        this.rect = new Rect(
+            x,
+            y,
+            RESOURCE_PIPE_WIDTH,
+            RESOURCE_PIPE_HEIGHT
+        );
 
         this.isTop = isTop;
 
@@ -369,6 +452,10 @@ class Pipe {
                 this.rect.height
             );
         }
+    }
+
+    getRect() {
+        return this.rect;
     }
 }
 
@@ -454,16 +541,17 @@ class PipeSpawner {
         this.isStarted = false;
     }
 
-    clear() {
+    onRestart() {
         this.pipes = [];
         this.pipeTimer = 0;
     }
 }
 
 class Game {
-    constructor(canvas, ctx) {
+    constructor(canvas, ctx, restartButton) {
         this.canvas = canvas;
         this.ctx = ctx;
+        this.restartButton = restartButton;
 
         // Game State
         this.gameStarted = false;
@@ -485,9 +573,17 @@ class Game {
             this.onScore();
         };
 
+        this.messageImage = new Image();
+        this.messageImage.src = RESOURCE_MESSAGE_PATH;
+
+        this.gameOverImage = new Image();
+        this.gameOverImage.src = RESOURCE_GAMEOVER_PATH;
+
         // Game loop timer:
         this.previousTime = 0;
         this.gameLoop = this.gameLoop.bind(this);
+
+        this.restartButton.hidden = true;
     }
 
     gameLoop(currentTime) {
@@ -506,6 +602,13 @@ class Game {
         this.base.update(this.canvas)
         this.pipeSpawner.update(this.canvas)
         this.player.update(this.canvas)
+
+        if(this.gameOver == false){
+            let collision = this.hasCollision();
+            if(collision){
+                this.onGameOver();
+            }
+        }
     }
 
     draw() {
@@ -514,6 +617,16 @@ class Game {
         this.pipeSpawner.draw(this.canvas, this.ctx);
         this.base.draw(this.canvas, this.ctx);
         this.player.draw(this.canvas, this.ctx);
+
+        if(this.gameOver == true){
+            this.drawGameOver(this.canvas, this.ctx);
+        } else {
+            if(this.gameStarted == true){
+                this.drawScore(this.canvas, this.ctx);
+            } else {
+                this.drawMessage(this.canvas, this.ctx);
+            }
+        }
     }
 
     onFlapAction(){
@@ -533,6 +646,7 @@ class Game {
 
     onStart(){
         console.log("Game started");
+        this.score = 0;
         this.base.onStart();
         this.player.onStart();
         this.pipeSpawner.onStart();
@@ -542,22 +656,170 @@ class Game {
         this.score++;
         console.log(`Score: ${this.score}`);
     }
+
+    onGameOver(){
+        console.log("Game over");
+        this.gameOver = true;
+        this.gameStarted = false;
+
+        if(this.score > this.high_score){
+            this.high_score = this.score;
+        }
+
+        this.player.onGameOver();
+        this.pipeSpawner.onGameOver();
+        this.base.onGameOver();
+
+        this.restartButton.hidden = false;
+    }
+
+    onRestart(){
+        console.log("Game restart");
+        this.gameOver = false;
+        this.gameStarted = false;
+
+        this.restartButton.hidden = true;
+
+        this.player.onRestart();
+        this.pipeSpawner.onRestart();
+    }
+
+    hasCollision(){
+        let birdRect = this.player.getRect();
+        let baseRect = this.base.getRect();
+
+        if(birdRect.intersects(baseRect)){
+            return true;
+        }
+
+        let hasPipeCollision = false;
+        this.pipeSpawner.pipes.forEach(pipe => {
+            let pipeRect = pipe.getRect();
+            if(birdRect.intersects(pipeRect)){
+                hasPipeCollision = true;
+            }
+        });
+
+        return hasPipeCollision;
+    }
+
+    drawScore(canvas, ctx) {
+        ctx.font = '48px "FlappyFont"';
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+
+        ctx.strokeText(
+            this.score.toString(),
+            50,
+            75
+        );
+
+        ctx.fillText(
+            this.score.toString(),
+            50,
+            75
+        );
+    }
+
+    drawMessage(canvas, ctx) {
+        const x =
+            (CANVAS_WIDTH - RESOURCE_MESSAGE_WIDTH) / 2;
+
+        const y =
+            (CANVAS_HEIGHT - RESOURCE_MESSAGE_HEIGHT) / 2;
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "white";
+
+        ctx.drawImage(
+            this.messageImage,
+            x,
+            y,
+            RESOURCE_MESSAGE_WIDTH,
+            RESOURCE_MESSAGE_HEIGHT
+        );
+    }
+
+    drawGameOver(canvas, ctx) {
+        // Game Over image
+        const imageX =
+            (CANVAS_WIDTH - RESOURCE_GAMEOVER_WIDTH) / 2;
+
+        const imageY =
+            CANVAS_HEIGHT * 0.2;
+
+        ctx.drawImage(
+            this.gameOverImage,
+            imageX,
+            imageY,
+            RESOURCE_GAMEOVER_WIDTH,
+            RESOURCE_GAMEOVER_HEIGHT
+        );
+
+        // Score text
+        ctx.font = '32px "FlappyFont"';
+        ctx.textAlign = "center";
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "white";
+
+        ctx.strokeText(
+            `SCORE: ${this.score}`,
+            canvas.width / 2,
+            imageY + 100
+        );
+
+        ctx.fillText(
+            `SCORE: ${this.score}`,
+            canvas.width / 2,
+            imageY + 100
+        );
+
+        // High score text
+        ctx.strokeText(
+            `BEST: ${this.high_score}`,
+            canvas.width / 2,
+            imageY + 150
+        );
+
+        ctx.fillText(
+            `BEST: ${this.high_score}`,
+            canvas.width / 2,
+            imageY + 150
+        );
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+async function loadFonts() {
+    const font = new FontFace(
+        "FlappyFont",
+        'url("assets/font/04B_19__.TTF")'
+    );
+
+    await font.load();
+    document.fonts.add(font);
+
+    console.log("Font loaded");
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadFonts();
     console.log("Hello, Flappy Bird!");
 
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    const restartButton = document.getElementById("restartButton");
 
-    let game = new Game(canvas, ctx);
+    let game = new Game(canvas, ctx, restartButton);
 
     let spacePressed = false;
 
     document.addEventListener("keydown", (event) => {
         if (event.code === "Space" && !spacePressed) {
             spacePressed = true;
-            game.onFlap();
+            game.onFlapAction();
         }
     });
 
@@ -572,6 +834,11 @@ document.addEventListener("DOMContentLoaded", () => {
             game.onFlapAction();
         }
     });
+
+    restartButton.addEventListener("click", () => {
+        game.onRestart();
+    });
+
     // Start game loop:
     requestAnimationFrame((time) => game.gameLoop(time));
 });
