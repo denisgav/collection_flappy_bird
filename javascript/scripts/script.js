@@ -5,14 +5,14 @@ const GAME_FPS = 30;
 const FRAME_TIME = 1000 / GAME_FPS; // 33.33 ms
 
 const BIRD_START_POS = {
-    x: 100,
+    x: 200,
     y: 300
 };
 
-const BIRD_FLAP_VELOCITY = -8.5;
-const BIRD_ACCELERATION = 0.45;
+const BIRD_FLAP_VELOCITY = -7;
+const BIRD_ACCELERATION = 0.5;
 const BIRD_ANGULAR_SPEED = 4;
-const BIRD_MAX_VELOCITY = 8;
+const BIRD_MAX_VELOCITY = 18;
 
 const BASE_SCROLL_SPEED = 2;
 
@@ -284,6 +284,182 @@ class Player {
     }
 }
 
+class Pipe {
+    constructor(x, y, pipeImgBottom, isTop = false) {
+        this.pipeImgBottom = pipeImgBottom;
+
+        this.rect = {
+            x: x,
+            y: y,
+            width: RESOURCE_PIPE_WIDTH,
+            height: RESOURCE_PIPE_HEIGHT
+        };
+
+        this.isTop = isTop;
+
+        // Score system
+        this.birdEnter = false;
+        this.birdExit = false;
+        this.birdPassed = false;
+
+        this.scoreListener = null;
+        this.isAlive = true;
+    }
+
+    update(canvas) {
+        this.rect.x -= BASE_SCROLL_SPEED;
+
+        if (this.rect.x < -RESOURCE_PIPE_WIDTH) {
+            this.isAlive = false;
+        }
+
+        if (this.scoreListener && !this.isTop) {
+            if (
+                BIRD_START_POS.x > this.rect.x &&
+                !this.birdPassed
+            ) {
+                this.birdEnter = true;
+            }
+
+            if (
+                BIRD_START_POS.x >
+                this.rect.x + this.rect.width &&
+                !this.birdPassed
+            ) {
+                this.birdExit = true;
+            }
+
+            if (
+                this.birdEnter &&
+                this.birdExit &&
+                !this.birdPassed
+            ) {
+                this.birdPassed = true;
+                this.scoreListener();
+            }
+        }
+    }
+
+    draw(canvas, ctx) {
+        if (this.isTop) {
+            ctx.save();
+
+            ctx.translate(
+                this.rect.x + this.rect.width / 2,
+                this.rect.y + this.rect.height / 2
+            );
+
+            ctx.scale(1, -1);
+
+            ctx.drawImage(
+                this.pipeImgBottom,
+                -this.rect.width / 2,
+                -this.rect.height / 2,
+                this.rect.width,
+                this.rect.height
+            );
+
+            ctx.restore();
+        } else {
+            ctx.drawImage(
+                this.pipeImgBottom,
+                this.rect.x,
+                this.rect.y,
+                this.rect.width,
+                this.rect.height
+            );
+        }
+    }
+}
+
+class PipeSpawner {
+    constructor(imagePipePath) {
+        this.pipeImgBottom = new Image();
+        this.pipeImgBottom.src = imagePipePath;
+
+        this.pipes = [];
+
+        this.isStarted = false;
+        this.pipeTimer = 0;
+
+        this.scoreListener = null;
+    }
+
+    update(ctx) {
+        // Spawn pipes
+        if (this.isStarted) {
+            if (this.pipeTimer <= 0) {
+
+                const yTop =
+                    Math.floor(
+                        Math.random() *
+                        (
+                            PIPE_SPAWNER_POSY_RAND_RANGE_MAX -
+                            PIPE_SPAWNER_POSY_RAND_RANGE_MIN + 1
+                        )
+                    ) +
+                    PIPE_SPAWNER_POSY_RAND_RANGE_MIN;
+
+                const yBottom =
+                    yTop +
+                    PIPE_SPAWNER_POSY_GAP +
+                    RESOURCE_PIPE_HEIGHT;
+
+                const pipeTop = new Pipe(
+                    PIPE_SPAWNER_POS_X,
+                    yTop,
+                    this.pipeImgBottom,
+                    true
+                );
+
+                const pipeBottom = new Pipe(
+                    PIPE_SPAWNER_POS_X,
+                    yBottom,
+                    this.pipeImgBottom,
+                    false
+                );
+
+                pipeBottom.scoreListener =
+                    this.scoreListener;
+
+                this.pipes.push(pipeTop);
+                this.pipes.push(pipeBottom);
+
+                this.pipeTimer = PIPE_SPAWNER_TIMEOUT;
+            }
+
+            this.pipeTimer--;
+        }
+
+        // Update pipes
+        if (this.isStarted) {
+            this.pipes.forEach(pipe => pipe.update(ctx));
+
+            this.pipes =
+                this.pipes.filter(pipe => pipe.isAlive);
+        }
+    }
+
+    draw(canvas, ctx) {
+        this.pipes.forEach(pipe => {
+            pipe.draw(canvas, ctx);
+        });
+    }
+
+    onStart() {
+        this.isStarted = true;
+    }
+
+    onGameOver() {
+        this.isStarted = false;
+    }
+
+    clear() {
+        this.pipes = [];
+        this.pipeTimer = 0;
+    }
+}
+
 class Game {
     constructor(canvas, ctx) {
         this.canvas = canvas;
@@ -303,6 +479,11 @@ class Game {
             RESOURCE_BLUEBIRD_MIDFLAP_PATH,
             RESOURCE_BLUEBIRD_UPFLAP_PATH
         );
+        this.pipeSpawner = new PipeSpawner(RESOURCE_PIPE_GREEN_PATH);
+
+        this.pipeSpawner.scoreListener = () => {
+            this.onScore();
+        };
 
         // Game loop timer:
         this.previousTime = 0;
@@ -323,12 +504,14 @@ class Game {
     update(){
         this.background.update(this.canvas)
         this.base.update(this.canvas)
+        this.pipeSpawner.update(this.canvas)
         this.player.update(this.canvas)
     }
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.background.draw(this.canvas, this.ctx);
+        this.pipeSpawner.draw(this.canvas, this.ctx);
         this.base.draw(this.canvas, this.ctx);
         this.player.draw(this.canvas, this.ctx);
     }
@@ -352,6 +535,12 @@ class Game {
         console.log("Game started");
         this.base.onStart();
         this.player.onStart();
+        this.pipeSpawner.onStart();
+    }
+
+    onScore(){
+        this.score++;
+        console.log(`Score: ${this.score}`);
     }
 }
 
@@ -363,10 +552,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let game = new Game(canvas, ctx);
 
+    let spacePressed = false;
+
     document.addEventListener("keydown", (event) => {
+        if (event.code === "Space" && !spacePressed) {
+            spacePressed = true;
+            game.onFlap();
+        }
+    });
+
+    document.addEventListener("keyup", (event) => {
         if (event.code === "Space") {
-            event.preventDefault(); // prevents page scrolling
-            game.onFlapAction();
+            spacePressed = false;
         }
     });
 
